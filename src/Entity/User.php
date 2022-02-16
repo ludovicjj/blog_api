@@ -23,6 +23,11 @@ class User
     /**
      * @ORM\Column(type="string", unique=true)
      */
+    private ?string $username = null;
+
+    /**
+     * @ORM\Column(type="string", unique=true)
+     */
     private ?string $email = null;
 
     /**
@@ -30,9 +35,19 @@ class User
      */
     private ?string $password = null;
 
+    /**
+     * @ORM\Column(type="json")
+     */
+    private array $role = [];
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
     }
 
     public function getEmail(): ?string
@@ -43,5 +58,14 @@ class User
     public function getPassword(): ?string
     {
         return $this->password;
+    }
+
+    public function getRole(): array
+    {
+        $roles =  $this->role;
+        if (empty($roles)) {
+            $roles[] = 'ROLE_USER';
+        }
+        return array_unique($roles);
     }
 }
