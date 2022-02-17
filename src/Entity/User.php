@@ -13,7 +13,23 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(name="user")
  */
-#[ApiResource]
+#[ApiResource(
+    collectionOperations: [
+        'get',
+        'post'
+    ],
+    itemOperations: [
+        'get' => [
+            'normalization_context' => ['groups' => ['read:user:collection', 'read:user:item', 'read:post:collection']]
+        ],
+        'put' => [
+            'denormalization_context' => ['groups' => ['write:user:item']]
+        ],
+        'delete'
+    ],
+    denormalizationContext: ['groups' => ['write:user:item', 'write:user']],
+    normalizationContext: ['groups' => ['read:user:collection']]
+)]
 class User
 {
     /**
@@ -27,29 +43,32 @@ class User
     /**
      * @ORM\Column(type="string", unique=true)
      */
-    #[Groups(['read:user:collection'])]
+    #[Groups(['read:user:collection', 'write:user:item'])]
     private ?string $username = null;
 
     /**
      * @ORM\Column(type="string", unique=true)
      */
-    #[Groups(['read:user:collection'])]
+    #[Groups(['read:user:collection', 'write:user:item'])]
     private ?string $email = null;
 
     /**
      * @ORM\Column(type="string")
      */
+    #[Groups(['read:user:item', 'write:user'])]
     private ?string $password = null;
 
     /**
      * @ORM\Column(type="json")
      */
+    #[Groups(['read:user:item', 'write:user'])]
     private array $roles = [];
 
     /**
      * @var Post[]|Collection
      * @ORM\OneToMany(targetEntity=Post::class, mappedBy="author")
      */
+    #[Groups(['read:user:item', 'write:user'])]
     private Collection $posts;
 
     public function __construct()
@@ -111,7 +130,7 @@ class User
     }
 
     /**
-     * @return Collection|Post[]
+     * @return Collection
      */
     public function getPosts(): Collection
     {
