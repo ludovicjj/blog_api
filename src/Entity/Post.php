@@ -6,10 +6,17 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\PostRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=PostRepository::class)
  * @ORM\Table(name="post")
+ * @UniqueEntity(
+ *     fields={"slug"},
+ *     errorPath="title",
+ *     message="Ce titre est déjà utilisé dans un autre article."
+ * )
  */
 #[ApiResource(
     collectionOperations: [
@@ -43,25 +50,51 @@ class Post
     /**
      * @ORM\Column(type="string", length=255)
      */
-    #[Groups(['read:post:collection', 'write:post'])]
+    #[
+        Groups(['read:post:collection', 'write:post']),
+        Assert\NotBlank(message: 'Le champs titre est obligatoire.'),
+        Assert\Length(
+            min: 3,
+            max: 255,
+            minMessage: 'Le titre doit comporter minimum {{ limit }} caractères.',
+            maxMessage: 'Le titre ne doit pas comporter plus de {{ limit }} caractères.'
+        )
+    ]
     private ?string $title = null;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    #[Groups(['read:post:collection', 'write:post'])]
+    #[
+        Groups(['read:post:collection', 'write:post']),
+        Assert\NotBlank(message: 'Le champs slug est obligatoire.'),
+        Assert\Length(max: 255)
+    ]
     private ?string $slug = null;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    #[Groups(['read:post:collection', 'write:post'])]
+    #[
+        Groups(['read:post:collection', 'write:post']),
+        Assert\Length(
+            max: 255,
+            maxMessage: 'Le résumé ne doit pas comporter plus de {{ limit }} caractères.'
+        )
+    ]
     private ?string $summary = null;
 
     /**
      * @ORM\Column(type="text")
      */
-    #[Groups(['read:post:item', 'write:post'])]
+    #[
+        Groups(['read:post:item', 'write:post']),
+        Assert\NotBlank(message: "L'article doit avoir un contenu."),
+        Assert\Length(
+            min: 10,
+            minMessage: "Le contenu de l'article doit comporter minimum {{ limit }} caractères."
+        )
+    ]
     private ?string $content = null;
 
     /**
@@ -71,9 +104,12 @@ class Post
     private \DateTime $publishedAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="posts")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="posts", cascade={"persist"})
      */
-    #[Groups(['read:post:item', 'write:post'])]
+    #[
+        Groups(['read:post:item', 'write:post']),
+        Assert\Valid
+    ]
     private ?User $author = null;
 
     public function __construct()

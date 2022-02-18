@@ -8,10 +8,14 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(name="user")
+ * @UniqueEntity("username", message="Ce nom d'utilisateur est déjà utilisé")
+ * @UniqueEntity("email", message="Cette adresse email est déjà utilisé")
  */
 #[ApiResource(
     collectionOperations: [
@@ -43,19 +47,35 @@ class User
     /**
      * @ORM\Column(type="string", unique=true)
      */
-    #[Groups(['read:user:collection', 'write:user:item'])]
+    #[
+        Groups(['read:user:collection', 'write:user:item', 'write:post']),
+        Assert\NotBlank(message: 'Le champs username est obligatoire.'),
+        Assert\Length(
+            min:2,
+            max: 50,
+            minMessage: "Le username doit comporter minimum {{ limit }} caractères.",
+            maxMessage: "Le username ne doit pas comporter plus de {{ limit }} caractères."
+        )
+    ]
     private ?string $username = null;
 
     /**
      * @ORM\Column(type="string", unique=true)
      */
-    #[Groups(['read:user:collection', 'write:user:item'])]
+    #[
+        Groups(['read:user:collection', 'write:user:item', 'write:post']),
+        Assert\NotBlank(message: 'Le champs email est obligatoire.'),
+        Assert\Email(message: "Email invalide")
+    ]
     private ?string $email = null;
 
     /**
      * @ORM\Column(type="string")
      */
-    #[Groups(['read:user:item', 'write:user'])]
+    #[
+        Groups(['read:user:item', 'write:user', 'write:post']),
+        Assert\NotBlank(message: 'Le champs password est obligatoire.')
+    ]
     private ?string $password = null;
 
     /**
