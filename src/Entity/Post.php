@@ -2,12 +2,15 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Repository\PostRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use DateTime;
 
 /**
  * @ORM\Entity(repositoryClass=PostRepository::class)
@@ -35,8 +38,12 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             'denormalization_context' => ['groups' => ['write:post']]
         ],
         'delete'
-    ]
-)]
+    ],
+    paginationClientItemsPerPage: true,
+    paginationItemsPerPage: 2,
+    paginationMaximumItemsPerPage: 10
+),
+ApiFilter(SearchFilter::class, properties: ['author.username' => 'exact'])]
 class Post
 {
     /**
@@ -101,7 +108,7 @@ class Post
      * @ORM\Column(type="datetime")
      */
     #[Groups(['read:post:item'])]
-    private \DateTime $publishedAt;
+    private DateTime $publishedAt;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="posts", cascade={"persist"})
@@ -114,7 +121,7 @@ class Post
 
     public function __construct()
     {
-        $this->publishedAt = new \DateTime();
+        $this->publishedAt = new DateTime();
     }
 
     public function getId(): ?int
@@ -170,12 +177,12 @@ class Post
         return $this;
     }
 
-    public function getPublishedAt(): \DateTime
+    public function getPublishedAt(): DateTime
     {
         return $this->publishedAt;
     }
 
-    public function setPublishedAt(\DateTime $publishedAt): self
+    public function setPublishedAt(DateTime $publishedAt): self
     {
         $this->publishedAt = $publishedAt;
         return $this;
