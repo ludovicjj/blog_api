@@ -35,7 +35,10 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             'denormalization_context' => ['groups' => ['write:post']]
         ],
         'delete'
-    ]
+    ],
+    paginationClientItemsPerPage: true,
+    paginationItemsPerPage: 2,
+    paginationMaximumItemsPerPage: 3
 )]
 class Post
 {
