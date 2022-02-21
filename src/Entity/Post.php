@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Filter\MySearchFilter;
 use App\Repository\PostRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -42,8 +43,9 @@ use DateTime;
     paginationClientItemsPerPage: true,
     paginationItemsPerPage: 2,
     paginationMaximumItemsPerPage: 10
-),
-ApiFilter(SearchFilter::class, properties: ['author.username' => 'exact'])]
+)]
+#[ApiFilter(SearchFilter::class, properties: ['author.username' => 'exact'])]
+#[ApiFilter(MySearchFilter::class,  properties: ['title', 'summary'])]
 class Post
 {
     /**
