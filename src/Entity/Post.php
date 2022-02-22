@@ -6,6 +6,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\PostCountController;
+use App\Controller\PostPublishController;
 use App\Filter\MySearchFilter;
 use App\Repository\PostRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -82,7 +83,12 @@ use DateTime;
         'put' => [
             'denormalization_context' => ['groups' => ['write:post']]
         ],
-        'delete'
+        'delete',
+        'publish' => [
+            'method' => 'POST',
+            'path' => '/posts/{id}/publish',
+            'controller' => PostPublishController::class
+        ]
     ],
     paginationClientItemsPerPage: true,
     paginationItemsPerPage: 2,
