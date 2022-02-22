@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\PostCountController;
 use App\Filter\MySearchFilter;
 use App\Repository\PostRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -29,6 +30,49 @@ use DateTime;
         ],
         'post' => [
             'denormalization_context' => ['groups' => ['write:post']]
+        ],
+        'count' => [
+            'method' => 'GET',
+            'path' => '/post/count',
+            'controller' => PostCountController::class,
+            'filters' => [],
+            'pagination_enabled' => false,
+            'openapi_context' => [
+                'summary' => 'Permet de récupérer le nombre total d\'articles',
+                'description' => 'Permet de récupérer le nombre total d\'articles',
+                'parameters' => [
+                    [
+                        'in' => 'query',
+                        'name' => 'published',
+                        'required' => false,
+                        'schema' => [
+                            'type' => 'integer',
+                            'maximum' => 1,
+                            'minimum' => 0,
+                            'example' => '1'
+                        ],
+                        'description' => 'Filtre les articles publiés'
+                    ]
+                ],
+                'responses' => [
+                    '200' => [
+                        'description' => 'total articles',
+                        'content' => [
+                            'application/json' => [
+                                'schema' => [
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'posts' => [
+                                            'type' => 'integer',
+                                            'example' => 15
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
         ]
     ],
     itemOperations: [
@@ -45,7 +89,7 @@ use DateTime;
     paginationMaximumItemsPerPage: 10
 )]
 #[ApiFilter(SearchFilter::class, properties: ['author.username' => 'exact'])]
-#[ApiFilter(MySearchFilter::class,  properties: ['title', 'summary'])]
+#[ApiFilter(MySearchFilter::class, properties: ['title', 'summary'])]
 class Post
 {
     /**
@@ -120,6 +164,11 @@ class Post
         Assert\Valid
     ]
     private ?User $author = null;
+
+    /**
+     * @ORM\Column(type="boolean", options={"default" : 0})
+     */
+    private bool $isPublished;
 
     public function __construct()
     {
@@ -198,6 +247,18 @@ class Post
     public function setAuthor(User $author): self
     {
         $this->author = $author;
+
+        return $this;
+    }
+
+    public function getIsPublished(): bool
+    {
+        return $this->isPublished;
+    }
+
+    public function setIsPublished(bool $isPublished): self
+    {
+        $this->isPublished = $isPublished;
 
         return $this;
     }
