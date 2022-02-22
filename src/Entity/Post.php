@@ -5,6 +5,8 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\PostCountController;
+use App\Controller\PostPublishController;
 use App\Filter\MySearchFilter;
 use App\Repository\PostRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -28,7 +30,51 @@ use DateTime;
             'normalization_context' => ['groups' => ['read:post:collection']]
         ],
         'post' => [
-            'denormalization_context' => ['groups' => ['write:post']]
+            'denormalization_context' => ['groups' => ['write:post']],
+            'normalization_context' => ['groups' => ['read:post:collection']]
+        ],
+        'count' => [
+            'method' => 'GET',
+            'path' => '/posts/count',
+            'controller' => PostCountController::class,
+            'filters' => [],
+            'pagination_enabled' => false,
+            'openapi_context' => [
+                'summary' => 'Permet de récupérer le nombre total d\'articles',
+                'description' => 'Permet de récupérer le nombre total d\'articles',
+                'parameters' => [
+                    [
+                        'in' => 'query',
+                        'name' => 'published',
+                        'required' => false,
+                        'schema' => [
+                            'type' => 'integer',
+                            'maximum' => 1,
+                            'minimum' => 0,
+                            'example' => '1'
+                        ],
+                        'description' => 'Filtre les articles publiés. Value: publié: 1, non publié: 0'
+                    ]
+                ],
+                'responses' => [
+                    '200' => [
+                        'description' => 'total articles',
+                        'content' => [
+                            'application/json' => [
+                                'schema' => [
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'posts' => [
+                                            'type' => 'integer',
+                                            'example' => 15
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
         ]
     ],
     itemOperations: [
@@ -38,14 +84,32 @@ use DateTime;
         'put' => [
             'denormalization_context' => ['groups' => ['write:post']]
         ],
-        'delete'
+        'delete',
+        'publish' => [
+            'method' => 'PUT',
+            'path' => '/posts/{id}/publish',
+            'controller' => PostPublishController::class,
+            'openapi_context' => [
+                'summary' => 'Set post as published',
+                'description' => 'Set post as published',
+                'requestBody' => [
+                    'content' => [
+                        'application/json' => [
+                            'schema' => [
+                                'type' => 'object'
+                            ]
+                        ],
+                    ]
+                ]
+            ]
+        ]
     ],
     paginationClientItemsPerPage: true,
     paginationItemsPerPage: 2,
     paginationMaximumItemsPerPage: 10
 )]
 #[ApiFilter(SearchFilter::class, properties: ['author.username' => 'exact'])]
-#[ApiFilter(MySearchFilter::class,  properties: ['title', 'summary'])]
+#[ApiFilter(MySearchFilter::class, properties: ['title', 'summary'])]
 class Post
 {
     /**
@@ -121,9 +185,16 @@ class Post
     ]
     private ?User $author = null;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default" : 0})
+     */
+    #[Groups(['read:post:item'])]
+    private bool $isPublished;
+
     public function __construct()
     {
         $this->publishedAt = new DateTime();
+        $this->isPublished = false;
     }
 
     public function getId(): ?int
@@ -198,6 +269,18 @@ class Post
     public function setAuthor(User $author): self
     {
         $this->author = $author;
+
+        return $this;
+    }
+
+    public function getIsPublished(): bool
+    {
+        return $this->isPublished;
+    }
+
+    public function setIsPublished(bool $isPublished): self
+    {
+        $this->isPublished = $isPublished;
 
         return $this;
     }
