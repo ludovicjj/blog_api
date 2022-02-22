@@ -35,7 +35,7 @@ use DateTime;
         ],
         'count' => [
             'method' => 'GET',
-            'path' => '/post/count',
+            'path' => '/posts/count',
             'controller' => PostCountController::class,
             'filters' => [],
             'pagination_enabled' => false,
