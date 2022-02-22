@@ -3,12 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 
+#[AsController]
 class PostPublishController
 {
-    public function __invoke(Post $post): Post
+    public function __invoke(Post $data): Post
     {
-        $post->setIsPublished(true);
-        return $post;
+        $data->setIsPublished(true);
+        return $data;
     }
 }

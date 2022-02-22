@@ -30,7 +30,8 @@ use DateTime;
             'normalization_context' => ['groups' => ['read:post:collection']]
         ],
         'post' => [
-            'denormalization_context' => ['groups' => ['write:post']]
+            'denormalization_context' => ['groups' => ['write:post']],
+            'normalization_context' => ['groups' => ['read:post:collection']]
         ],
         'count' => [
             'method' => 'GET',
@@ -52,7 +53,7 @@ use DateTime;
                             'minimum' => 0,
                             'example' => '1'
                         ],
-                        'description' => 'Filtre les articles publiés'
+                        'description' => 'Filtre les articles publiés. Value: publié: 1, non publié: 0'
                     ]
                 ],
                 'responses' => [
@@ -85,9 +86,22 @@ use DateTime;
         ],
         'delete',
         'publish' => [
-            'method' => 'POST',
+            'method' => 'PUT',
             'path' => '/posts/{id}/publish',
-            'controller' => PostPublishController::class
+            'controller' => PostPublishController::class,
+            'openapi_context' => [
+                'summary' => 'Set post as published',
+                'description' => 'Set post as published',
+                'requestBody' => [
+                    'content' => [
+                        'application/json' => [
+                            'schema' => [
+                                'type' => 'object'
+                            ]
+                        ],
+                    ]
+                ]
+            ]
         ]
     ],
     paginationClientItemsPerPage: true,
@@ -174,11 +188,13 @@ class Post
     /**
      * @ORM\Column(type="boolean", options={"default" : 0})
      */
+    #[Groups(['read:post:item'])]
     private bool $isPublished;
 
     public function __construct()
     {
         $this->publishedAt = new DateTime();
+        $this->isPublished = false;
     }
 
     public function getId(): ?int
