@@ -63,6 +63,11 @@ class MySearchFilter extends AbstractContextAwareFilter
                 'property' => null,
                 'type' => Type::BUILTIN_TYPE_STRING,
                 'required' => false,
+                'description' => 'Récupère les articles qui contiennent les valeurs suivantes dans leur titre',
+                'schema' => [
+                    'type' => 'string',
+                    'example' => 'nuit,hello,is,world'
+                ],
             ]
         ];
     }
