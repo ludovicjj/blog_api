@@ -4,6 +4,7 @@ namespace App\OpenApi;
 
 use ApiPlatform\Core\OpenApi\Factory\OpenApiFactoryInterface;
 use ApiPlatform\Core\OpenApi\Model\Parameter;
+use ApiPlatform\Core\OpenApi\Model\PathItem;
 use ApiPlatform\Core\OpenApi\OpenApi;
 
 class OpenApiFactory implements OpenApiFactoryInterface
@@ -15,6 +16,16 @@ class OpenApiFactory implements OpenApiFactoryInterface
     public function __invoke(array $context = []): OpenApi
     {
         $openApi = $this->decorated->__invoke($context);
+        /** @var PathItem $path */
+        foreach ($openApi->getPaths()->getPaths() as $key => $path) {
+            if ($path->getGet() && str_contains($path->getGet()->getSummary(), 'Permet')) {
+                $operation = $path->getGet();
+                $openApi->getPaths()->addPath(
+                    $key, $path->withGet($operation->withSummary($operation->getSummary() .' (modifié)'))
+                );
+            }
+        }
+
         $pathItem = $openApi->getPaths()->getPath('/api/posts/count');
         $operation = $pathItem->getGet();
         $openApi->getPaths()->addPath(
@@ -38,7 +49,6 @@ class OpenApiFactory implements OpenApiFactoryInterface
                 )
             )
         );
-//        dd($openApi->getPaths()->getPath('/api/posts'));
         return $openApi;
     }
 }
