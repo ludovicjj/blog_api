@@ -22,16 +22,25 @@ class DependenciesDataProvider implements ContextAwareCollectionDataProviderInte
 
     public function getCollection(string $resourceClass, string $operationName = null, array $context = []): iterable
     {
+        $searchQuery = $context['filters']['search'] ?? '';
+
         $dependencies = $this->getDependencies();
         $collection = [];
         foreach ($dependencies as $name => $version) {
             $uuid = Uuid::uuid5(Uuid::NAMESPACE_URL, $name)->toString();
-            $collection[] = new Dependencies($uuid, $name, $version);
+            if ($searchQuery) {
+                if (str_contains($name, $searchQuery)) {
+                    $collection[] = new Dependencies($uuid, $name, $version);
+                }
+            } else {
+                $collection[] = new Dependencies($uuid, $name, $version);
+            }
         }
+
         return $collection;
     }
 
-    public function getItem(string $resourceClass, $id, string $operationName = null, array $context = [])
+    public function getItem(string $resourceClass, $id, string $operationName = null, array $context = []): ?object
     {
         $dependencies = $this->getDependencies();
         foreach ($dependencies as $name => $version) {

@@ -2,14 +2,17 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Filter\DependenciesFilter;
 
 #[ApiResource(
     collectionOperations: ['get'],
     itemOperations: ['get'],
     paginationEnabled: false
 )]
+#[ApiFilter(DependenciesFilter::class)]
 class Dependencies
 {
     #[ApiProperty(identifier: true)]
