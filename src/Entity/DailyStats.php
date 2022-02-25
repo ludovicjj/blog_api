@@ -8,6 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 #[ApiResource]
 class DailyStats
 {
+    #[ApiProperty(identifier: true)]
     public $date;
 
     public $totalVisitors;
