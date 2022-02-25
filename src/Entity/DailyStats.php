@@ -13,11 +13,7 @@ use DateTimeInterface;
         'get'
     ],
     itemOperations: [
-        'get' => [
-            'read' => false,
-            'output' => false,
-            'controller' => NotFoundAction::class
-        ]
+        'get'
     ],
     shortName: "daily-stats",
     normalizationContext: ['groups' => ['read:daily-stats:collection']]
