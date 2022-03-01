@@ -18,7 +18,7 @@ class StatsHelper
         return $statsData['stats'];
     }
 
-    private function count(): int
+    public function count(): int
     {
         return count($this->fetchStatsData());
     }
@@ -47,12 +47,23 @@ class StatsHelper
     /**
      * @return array<DailyStats>
      */
-    public function fetchMany(): array
+    public function fetchMany(int $itemsPerPage = null, int $offset = null): array
     {
         $stats = [];
+        $i = 0;
         foreach ($this->fetchStatsData() as $statData) {
+            $i++;
+            // Todo: offset;
+            if ($offset >= $i) {
+                continue;
+            }
 
             $stats[] = $this->createDailyStats($statData);
+
+            // Todo: items per page;
+            if ($itemsPerPage <= count($stats)) {
+                break;
+            }
         }
         return $stats;
     }

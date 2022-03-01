@@ -10,28 +10,32 @@ class DailyStatsPaginator implements PaginatorInterface, \IteratorAggregate
 {
     private ?Traversable $dailyStatsIterator = null;
 
-    public function __construct(private StatsHelper $statsHelper)
+    public function __construct(
+        private StatsHelper $statsHelper,
+        private int $currentPage,
+        private int $itemsPerPage
+    )
     {
     }
 
     public function getLastPage(): float
     {
-        return 2;
+        return ceil($this->getTotalItems() / $this->getItemsPerPage()) ?: 1.;
     }
 
     public function getTotalItems(): float
     {
-        return 25;
+        return $this->statsHelper->count();
     }
 
     public function getCurrentPage(): float
     {
-        return 1;
+        return $this->currentPage;
     }
 
     public function getItemsPerPage(): float
     {
-        return 10;
+        return $this->itemsPerPage;
     }
 
     public function count(): int
@@ -39,10 +43,20 @@ class DailyStatsPaginator implements PaginatorInterface, \IteratorAggregate
         return iterator_count($this->getIterator());
     }
 
+    private function getOffset(): int
+    {
+        return (($this->getCurrentPage() - 1) * $this->getItemsPerPage());
+    }
+
     public function getIterator(): Traversable
     {
         if ($this->dailyStatsIterator === null) {
-            $this->dailyStatsIterator = new \ArrayIterator($this->statsHelper->fetchMany());
+            $this->dailyStatsIterator = new \ArrayIterator(
+                $this->statsHelper->fetchMany(
+                    $this->getItemsPerPage(),
+                    $this->getOffset()
+                )
+            );
         }
 
         return $this->dailyStatsIterator;
