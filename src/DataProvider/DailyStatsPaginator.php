@@ -3,13 +3,12 @@
 namespace App\DataProvider;
 
 use ApiPlatform\Core\DataProvider\PaginatorInterface;
-use App\Entity\DailyStats;
 use App\Service\StatsHelper;
 use Traversable;
 
 class DailyStatsPaginator implements PaginatorInterface, \IteratorAggregate
 {
-    private ?Traversable $dailyStatsIterator;
+    private ?Traversable $dailyStatsIterator = null;
 
     public function __construct(private StatsHelper $statsHelper)
     {
@@ -37,26 +36,13 @@ class DailyStatsPaginator implements PaginatorInterface, \IteratorAggregate
 
     public function count(): int
     {
-        return $this->getTotalItems();
+        return iterator_count($this->getIterator());
     }
 
     public function getIterator(): Traversable
     {
         if ($this->dailyStatsIterator === null) {
-            $stats = [];
-            $stats1 = new DailyStats(
-                new \DateTime(),
-                100,
-                []
-            );
-            $stats2 = new DailyStats(
-                new \DateTime('-1 day'),
-                200,
-                []
-            );
-            $stats = [$stats1, $stats2];
-
-            $this->dailyStatsIterator = new \ArrayIterator($stats);
+            $this->dailyStatsIterator = new \ArrayIterator($this->statsHelper->fetchMany());
         }
 
         return $this->dailyStatsIterator;

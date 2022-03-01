@@ -16,9 +16,9 @@ class DailyStatsProvider implements CollectionDataProviderInterface, RestrictedD
     {
     }
 
-    public function getCollection(string $resourceClass, string $operationName = null): array
+    public function getCollection(string $resourceClass, string $operationName = null)
     {
-        return $this->statsHelper->fetchMany();
+        return new DailyStatsPaginator($this->statsHelper);
     }
 
     public function supports(string $resourceClass, string $operationName = null, array $context = []): bool
