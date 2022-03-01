@@ -17,7 +17,7 @@ class DailyStatsProvider implements ContextAwareCollectionDataProviderInterface,
     {
     }
 
-    public function getCollection(string $resourceClass, string $operationName = null, array $context = [])
+    public function getCollection(string $resourceClass, string $operationName = null, array $context = []): iterable
     {
         list($page, $offset, $itemsPerPage) = $this->pagination->getPagination($resourceClass, $operationName, $context);
         return new DailyStatsPaginator($this->statsHelper, $page, $itemsPerPage);
