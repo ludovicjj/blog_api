@@ -2,13 +2,13 @@
 
 namespace App\DataProvider;
 
-use ApiPlatform\Core\DataProvider\CollectionDataProviderInterface;
+use ApiPlatform\Core\DataProvider\ContextAwareCollectionDataProviderInterface;
 use ApiPlatform\Core\DataProvider\ItemDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
 use App\Entity\DailyStats;
 use App\Service\StatsHelper;
 
-class DailyStatsProvider implements CollectionDataProviderInterface, RestrictedDataProviderInterface,
+class DailyStatsProvider implements ContextAwareCollectionDataProviderInterface, RestrictedDataProviderInterface,
     ItemDataProviderInterface
 {
 
@@ -16,9 +16,10 @@ class DailyStatsProvider implements CollectionDataProviderInterface, RestrictedD
     {
     }
 
-    public function getCollection(string $resourceClass, string $operationName = null)
+    public function getCollection(string $resourceClass, string $operationName = null, array $context = [])
     {
-        return new DailyStatsPaginator($this->statsHelper);
+        $currentPageQuery = (int)$context['filters']['page'];
+        return new DailyStatsPaginator($this->statsHelper, $currentPageQuery, 3);
     }
 
     public function supports(string $resourceClass, string $operationName = null, array $context = []): bool
