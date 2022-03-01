@@ -4,6 +4,7 @@ namespace App\DataProvider;
 
 use ApiPlatform\Core\DataProvider\ContextAwareCollectionDataProviderInterface;
 use ApiPlatform\Core\DataProvider\ItemDataProviderInterface;
+use ApiPlatform\Core\DataProvider\Pagination;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
 use App\Entity\DailyStats;
 use App\Service\StatsHelper;
@@ -12,14 +13,14 @@ class DailyStatsProvider implements ContextAwareCollectionDataProviderInterface,
     ItemDataProviderInterface
 {
 
-    public function __construct(private StatsHelper $statsHelper)
+    public function __construct(private StatsHelper $statsHelper, private Pagination $pagination)
     {
     }
 
     public function getCollection(string $resourceClass, string $operationName = null, array $context = [])
     {
-        $currentPageQuery = (int)$context['filters']['page'];
-        return new DailyStatsPaginator($this->statsHelper, $currentPageQuery, 3);
+        list($page, $offset, $itemsPerPage) = $this->pagination->getPagination($resourceClass, $operationName, $context);
+        return new DailyStatsPaginator($this->statsHelper, $page, $itemsPerPage);
     }
 
     public function supports(string $resourceClass, string $operationName = null, array $context = []): bool
