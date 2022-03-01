@@ -16,7 +16,8 @@ use DateTimeInterface;
         'get'
     ],
     shortName: "daily-stats",
-    normalizationContext: ['groups' => ['read:daily-stats:collection']]
+    normalizationContext: ['groups' => ['read:daily-stats:collection']],
+    paginationItemsPerPage: 7
 )]
 class DailyStats
 {
