@@ -4,11 +4,11 @@ namespace App\DataPersister;
 
 use ApiPlatform\Core\DataPersister\DataPersisterInterface;
 use App\Entity\DailyStats;
-use Psr\Log\LoggerInterface;
+use App\Service\StatsHelper;
 
 class DailyStatsPersister implements DataPersisterInterface
 {
-    public function __construct(private LoggerInterface $appLogger)
+    public function __construct(private StatsHelper $statsHelper)
     {
     }
 
@@ -19,14 +19,16 @@ class DailyStatsPersister implements DataPersisterInterface
 
     /**
      * @param DailyStats $data
+     * @return DailyStats
      */
-    public function persist($data): void
+    public function persist($data): DailyStats
     {
-        $this->appLogger->info(sprintf('Update the  total visitor to "%d"', $data->totalVisitors));
+        $this->statsHelper->persist($data);
+        return $data;
     }
 
     public function remove($data)
     {
-        throw new \Exception('Not supported');
+        throw new \Exception('Not supported yet');
     }
 }
