@@ -13,9 +13,11 @@ use DateTimeInterface;
         'get'
     ],
     itemOperations: [
-        'get'
+        'get',
+        'put'
     ],
     shortName: "daily-stats",
+    denormalizationContext: ['groups' => ['write:daily-stats']],
     normalizationContext: ['groups' => ['read:daily-stats:collection']],
     paginationItemsPerPage: 7
 )]
@@ -24,7 +26,7 @@ class DailyStats
     #[Groups(['read:daily-stats:collection'])]
     public DateTimeInterface $date;
 
-    #[Groups(['read:daily-stats:collection'])]
+    #[Groups(['read:daily-stats:collection', 'write:daily-stats'])]
     public int $totalVisitors;
 
     /** @var array<Post> */
