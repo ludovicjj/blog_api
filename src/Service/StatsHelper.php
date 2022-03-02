@@ -67,4 +67,22 @@ class StatsHelper
         }
         return $stats;
     }
+
+    public function persist(DailyStats $dailyStat): void
+    {
+        $dailyStatsDateInput = $dailyStat->date->format('Y-m-d');
+        $statsDataUpdated = [];
+
+        foreach ($this->fetchStatsData() as $data) {
+            if ($data['date'] === $dailyStatsDateInput) {
+                $data['visitors'] = $dailyStat->totalVisitors;
+            }
+            $statsDataUpdated['stats'][] = $data;
+        }
+
+        file_put_contents(
+            __DIR__ . '/fake_stats.json',
+            json_encode($statsDataUpdated, JSON_PRETTY_PRINT)
+        );
+    }
 }
