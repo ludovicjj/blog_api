@@ -8,7 +8,7 @@ use Psr\Log\LoggerInterface;
 
 class DailyStatsPersister implements DataPersisterInterface
 {
-    public function __construct(private LoggerInterface $logger)
+    public function __construct(private LoggerInterface $appLogger)
     {
     }
 
@@ -20,9 +20,9 @@ class DailyStatsPersister implements DataPersisterInterface
     /**
      * @param DailyStats $data
      */
-    public function persist($data)
+    public function persist($data): void
     {
-        $this->logger->info(sprintf('Update the  total visitor to "%d"', $data->totalVisitors));
+        $this->appLogger->info(sprintf('Update the  total visitor to "%d"', $data->totalVisitors));
     }
 
     public function remove($data)
