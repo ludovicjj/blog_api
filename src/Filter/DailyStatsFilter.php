@@ -4,6 +4,7 @@ namespace App\Filter;
 
 use ApiPlatform\Core\Serializer\Filter\FilterInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class DailyStatsFilter implements FilterInterface
 {
@@ -17,10 +18,13 @@ class DailyStatsFilter implements FilterInterface
             return;
         }
         $fromDate = \DateTimeImmutable::createFromFormat('Y-m-d', $from);
-        if($fromDate) {
-            $fromDate = $fromDate->setTime(0,0);
-            $context[self::FROM_FILTER_CONTEXT] = $fromDate;
+
+        if (!$fromDate) {
+            throw new BadRequestHttpException('Invalid "from" date format');
         }
+
+        $fromDate = $fromDate->setTime(0,0);
+        $context[self::FROM_FILTER_CONTEXT] = $fromDate;
     }
 
     public function getDescription(string $resourceClass): array
