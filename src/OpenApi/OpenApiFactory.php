@@ -16,6 +16,7 @@ class OpenApiFactory implements OpenApiFactoryInterface
     public function __invoke(array $context = []): OpenApi
     {
         $openApi = $this->decorated->__invoke($context);
+        return $openApi;
 
         // Update summary to get operation "/api/post/count"
         /** @var PathItem $path */

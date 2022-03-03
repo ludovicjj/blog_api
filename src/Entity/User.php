@@ -17,23 +17,23 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @UniqueEntity("username", message="Ce nom d'utilisateur est déjà utilisé")
  * @UniqueEntity("email", message="Cette adresse email est déjà utilisé")
  */
-#[ApiResource(
-    collectionOperations: [
-        'get',
-        'post'
-    ],
-    itemOperations: [
-        'get' => [
-            'normalization_context' => ['groups' => ['read:user:collection', 'read:user:item', 'read:post:collection']]
-        ],
-        'put' => [
-            'denormalization_context' => ['groups' => ['write:user:item']]
-        ],
-        'delete'
-    ],
-    denormalizationContext: ['groups' => ['write:user:item', 'write:user']],
-    normalizationContext: ['groups' => ['read:user:collection']]
-)]
+//#[ApiResource(
+//    collectionOperations: [
+//        'get',
+//        'post'
+//    ],
+//    itemOperations: [
+//        'get' => [
+//            'normalization_context' => ['groups' => ['read:user:collection', 'read:user:item', 'read:post:collection']]
+//        ],
+//        'put' => [
+//            'denormalization_context' => ['groups' => ['write:user:item']]
+//        ],
+//        'delete'
+//    ],
+//    denormalizationContext: ['groups' => ['write:user:item', 'write:user']],
+//    normalizationContext: ['groups' => ['read:user:collection']]
+//)]
 class User
 {
     /**

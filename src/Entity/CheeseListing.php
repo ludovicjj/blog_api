@@ -11,7 +11,11 @@ use DateTime;
  * @ORM\Entity(repositoryClass=CheeseListingRepository::class)
  * @ORM\Table(name="cheese_listing")
  */
-#[ApiResource]
+#[ApiResource(
+    collectionOperations: ['get', 'post'],
+    itemOperations: ['get', 'put'],
+    shortName: 'cheeses'
+)]
 class CheeseListing
 {
     /**

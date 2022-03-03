@@ -25,95 +25,95 @@ use DateTime;
  *     message="Ce titre est déjà utilisé dans un autre article."
  * )
  */
-#[ApiResource(
-    collectionOperations: [
-        'get' => [
-            'normalization_context' => ['groups' => ['read:post:collection']]
-        ],
-        'post' => [
-            'denormalization_context' => ['groups' => ['write:post']],
-            'normalization_context' => ['groups' => ['read:post:collection']]
-        ],
-        'count' => [
-            'method' => 'GET',
-            'path' => '/posts/count',
-            'controller' => PostCountController::class,
-            'filters' => [],
-            'pagination_enabled' => false,
-            'openapi_context' => [
-                'summary' => 'Permet de récupérer le nombre total d\'articles',
-                'description' => 'Permet de récupérer le nombre total d\'articles',
-                'parameters' => [
-                    [
-                        'in' => 'query',
-                        'name' => 'published',
-                        'required' => false,
-                        'schema' => [
-                            'type' => 'integer',
-                            'maximum' => 1,
-                            'minimum' => 0,
-                            'example' => '1'
-                        ],
-                        'description' => 'Filtre les articles publiés. Value: publié: 1, non publié: 0'
-                    ]
-                ],
-                'responses' => [
-                    '200' => [
-                        'description' => 'total articles',
-                        'content' => [
-                            'application/json' => [
-                                'schema' => [
-                                    'type' => 'object',
-                                    'properties' => [
-                                        'posts' => [
-                                            'type' => 'integer',
-                                            'example' => 15
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ]
-    ],
-    itemOperations: [
-        'get' => [
-            'normalization_context' => ['groups' => ['read:post:collection', 'read:post:item', 'read:user:collection']],
-            'controller' => NotFoundAction::class,
-            'read' => false,
-            'output' => false
-        ],
-        'put' => [
-            'denormalization_context' => ['groups' => ['write:post']]
-        ],
-        'delete',
-        'publish' => [
-            'method' => 'PUT',
-            'path' => '/posts/{id}/publish',
-            'controller' => PostPublishController::class,
-            'openapi_context' => [
-                'summary' => 'Set post as published',
-                'description' => 'Set post as published',
-                'requestBody' => [
-                    'content' => [
-                        'application/json' => [
-                            'schema' => [
-                                'type' => 'object'
-                            ]
-                        ],
-                    ]
-                ]
-            ]
-        ]
-    ],
-    paginationClientItemsPerPage: true,
-    paginationItemsPerPage: 2,
-    paginationMaximumItemsPerPage: 10
-)]
-#[ApiFilter(SearchFilter::class, properties: ['author.username' => 'exact'])]
-#[ApiFilter(MySearchFilter::class, properties: ['title', 'summary'])]
+//#[ApiResource(
+//    collectionOperations: [
+//        'get' => [
+//            'normalization_context' => ['groups' => ['read:post:collection']]
+//        ],
+//        'post' => [
+//            'denormalization_context' => ['groups' => ['write:post']],
+//            'normalization_context' => ['groups' => ['read:post:collection']]
+//        ],
+//        'count' => [
+//            'method' => 'GET',
+//            'path' => '/posts/count',
+//            'controller' => PostCountController::class,
+//            'filters' => [],
+//            'pagination_enabled' => false,
+//            'openapi_context' => [
+//                'summary' => 'Permet de récupérer le nombre total d\'articles',
+//                'description' => 'Permet de récupérer le nombre total d\'articles',
+//                'parameters' => [
+//                    [
+//                        'in' => 'query',
+//                        'name' => 'published',
+//                        'required' => false,
+//                        'schema' => [
+//                            'type' => 'integer',
+//                            'maximum' => 1,
+//                            'minimum' => 0,
+//                            'example' => '1'
+//                        ],
+//                        'description' => 'Filtre les articles publiés. Value: publié: 1, non publié: 0'
+//                    ]
+//                ],
+//                'responses' => [
+//                    '200' => [
+//                        'description' => 'total articles',
+//                        'content' => [
+//                            'application/json' => [
+//                                'schema' => [
+//                                    'type' => 'object',
+//                                    'properties' => [
+//                                        'posts' => [
+//                                            'type' => 'integer',
+//                                            'example' => 15
+//                                        ]
+//                                    ]
+//                                ]
+//                            ]
+//                        ]
+//                    ]
+//                ]
+//            ]
+//        ]
+//    ],
+//    itemOperations: [
+//        'get' => [
+//            'normalization_context' => ['groups' => ['read:post:collection', 'read:post:item', 'read:user:collection']],
+//            'controller' => NotFoundAction::class,
+//            'read' => false,
+//            'output' => false
+//        ],
+//        'put' => [
+//            'denormalization_context' => ['groups' => ['write:post']]
+//        ],
+//        'delete',
+//        'publish' => [
+//            'method' => 'PUT',
+//            'path' => '/posts/{id}/publish',
+//            'controller' => PostPublishController::class,
+//            'openapi_context' => [
+//                'summary' => 'Set post as published',
+//                'description' => 'Set post as published',
+//                'requestBody' => [
+//                    'content' => [
+//                        'application/json' => [
+//                            'schema' => [
+//                                'type' => 'object'
+//                            ]
+//                        ],
+//                    ]
+//                ]
+//            ]
+//        ]
+//    ],
+//    paginationClientItemsPerPage: true,
+//    paginationItemsPerPage: 2,
+//    paginationMaximumItemsPerPage: 10
+//)]
+//#[ApiFilter(SearchFilter::class, properties: ['author.username' => 'exact'])]
+//#[ApiFilter(MySearchFilter::class, properties: ['title', 'summary'])]
 class Post
 {
     /**
