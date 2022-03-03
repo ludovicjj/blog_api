@@ -23,7 +23,7 @@ use DateTimeInterface;
     normalizationContext: ['groups' => ['read:daily-stats:collection']],
     paginationItemsPerPage: 7
 )]
-#[ApiFilter(DailyStatsFilter::class)]
+#[ApiFilter(DailyStatsFilter::class, arguments: ["throwOnInvalid" => true])]
 class DailyStats
 {
     #[Groups(['read:daily-stats:collection'])]
