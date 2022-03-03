@@ -7,6 +7,7 @@ use ApiPlatform\Core\DataProvider\ItemDataProviderInterface;
 use ApiPlatform\Core\DataProvider\Pagination;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
 use App\Entity\DailyStats;
+use App\Filter\DailyStatsFilter;
 use App\Service\StatsHelper;
 
 class DailyStatsProvider implements ContextAwareCollectionDataProviderInterface, RestrictedDataProviderInterface,
@@ -20,7 +21,14 @@ class DailyStatsProvider implements ContextAwareCollectionDataProviderInterface,
     public function getCollection(string $resourceClass, string $operationName = null, array $context = []): iterable
     {
         list($page, $offset, $itemsPerPage) = $this->pagination->getPagination($resourceClass, $operationName, $context);
-        return new DailyStatsPaginator($this->statsHelper, $page, $itemsPerPage);
+
+        $paginator =  new DailyStatsPaginator($this->statsHelper, $page, $itemsPerPage);
+        $fromDate = $context[DailyStatsFilter::FROM_FILTER_CONTEXT] ?? null;
+        if ($fromDate) {
+            $paginator->setFromDate($fromDate);
+        }
+
+        return $paginator;
     }
 
     public function supports(string $resourceClass, string $operationName = null, array $context = []): bool

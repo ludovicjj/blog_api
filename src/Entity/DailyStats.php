@@ -3,8 +3,10 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Action\NotFoundAction;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Filter\DailyStatsFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
 use DateTimeInterface;
 
@@ -21,6 +23,7 @@ use DateTimeInterface;
     normalizationContext: ['groups' => ['read:daily-stats:collection']],
     paginationItemsPerPage: 7
 )]
+#[ApiFilter(DailyStatsFilter::class, arguments: ["throwOnInvalid" => true])]
 class DailyStats
 {
     #[Groups(['read:daily-stats:collection'])]
