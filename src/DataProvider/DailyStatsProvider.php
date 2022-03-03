@@ -20,7 +20,11 @@ class DailyStatsProvider implements ContextAwareCollectionDataProviderInterface,
     public function getCollection(string $resourceClass, string $operationName = null, array $context = []): iterable
     {
         list($page, $offset, $itemsPerPage) = $this->pagination->getPagination($resourceClass, $operationName, $context);
-        return new DailyStatsPaginator($this->statsHelper, $page, $itemsPerPage);
+
+        $paginator =  new DailyStatsPaginator($this->statsHelper, $page, $itemsPerPage);
+        $paginator->setFromDate(new \DateTime('2020-08-30'));
+
+        return $paginator;
     }
 
     public function supports(string $resourceClass, string $operationName = null, array $context = []): bool
