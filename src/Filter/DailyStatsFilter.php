@@ -18,7 +18,7 @@ class DailyStatsFilter implements FilterInterface
         }
         $fromDate = \DateTimeImmutable::createFromFormat('Y-m-d', $from);
         if($fromDate) {
-            $fromDate->setTime(0,0);
+            $fromDate = $fromDate->setTime(0,0);
             $context[self::FROM_FILTER_CONTEXT] = $fromDate;
         }
     }
