@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CheeseListingRepository;
 use DateTimeInterface;
 use DateTimeImmutable;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=CheeseListingRepository::class)
@@ -16,7 +17,9 @@ use DateTimeImmutable;
 #[ApiResource(
     collectionOperations: ['get', 'post'],
     itemOperations: ['get', 'put'],
-    shortName: 'cheeses'
+    shortName: 'cheeses',
+    denormalizationContext: ['groups' => ['cheeses:write'], 'swagger_definition_name' => 'Write'],
+    normalizationContext: ['groups' => ['cheeses:read'], 'swagger_definition_name' => 'Read'],
 )]
 class CheeseListing
 {
@@ -30,16 +33,19 @@ class CheeseListing
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['cheeses:read', 'cheeses:write'])]
     private string $title;
 
     /**
      * @ORM\Column(type="text")
      */
+    #[Groups(['cheeses:read'])]
     private string $description;
 
     /**
      * @ORM\Column(type="integer")
      */
+    #[Groups(['cheeses:read', 'cheeses:write'])]
     private int $price;
 
     /**
@@ -55,6 +61,7 @@ class CheeseListing
     public function __construct()
     {
         $this->createdAt = new DateTimeImmutable();
+        $this->isPublished = false;
     }
 
     public function getId(): ?int
@@ -73,9 +80,21 @@ class CheeseListing
         return $this->title;
     }
 
+    /**
+     * The description of the cheese as raw text.
+     * @param string $description
+     * @return $this
+     */
+    #[Groups(['cheeses:write'])]
     public function setTextDescription(string $description): self
     {
         $this->description = str_replace(["\r\n", "\r", "\n"], "<br />", $description);
+        return $this;
+    }
+
+    public function setDescription(string $description): self
+    {
+        $this->description = $description;
         return $this;
     }
 
@@ -100,6 +119,11 @@ class CheeseListing
         return $this->createdAt;
     }
 
+    /**
+     * How long ago this cheese item was added in text format, example "1 day ago".
+     * @return string
+     */
+    #[Groups(['cheeses:read'])]
     public function getCreatedAtAgo(): string
     {
         return Carbon::instance($this->getCreatedAt())->diffForHumans();
