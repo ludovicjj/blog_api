@@ -39,6 +39,7 @@ class ResetDatabaseCommand extends Command
             $this->runSymfonyCommand('doctrine:database:drop', ["--force" => true]);
             $this->runSymfonyCommand('doctrine:database:create', []);
             $this->runSymfonyCommand('doctrine:migrations:migrate', ["--no-interaction" => true]);
+            $this->runSymfonyCommand('hautelook:fixtures:load', ["--no-interaction" => true]);
             $this->io->success('Recreate database with success');
             return Command::SUCCESS;
         } catch (Exception $exception) {
