@@ -9,6 +9,7 @@ use App\Repository\CheeseListingRepository;
 use DateTimeInterface;
 use DateTimeImmutable;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 /**
  * @ORM\Entity(repositoryClass=CheeseListingRepository::class)
@@ -86,6 +87,7 @@ class CheeseListing
      * @return $this
      */
     #[Groups(['cheeses:write'])]
+    #[SerializedName('description')]
     public function setTextDescription(string $description): self
     {
         $this->description = str_replace(["\r\n", "\r", "\n"], "<br />", $description);
