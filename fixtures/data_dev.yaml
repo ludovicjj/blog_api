@@ -1,0 +1,45 @@
+App\Entity\CheeseListing:
+    cheese_1:
+        title: "Angors"
+        description: "L’Angors est un fromage fabriqué de manière artisanale, au lait cru de chèvre. Il est produit dans les Deux-Sèvres par la Fromagerie des Gors."
+        price: 750
+    cheese_2:
+        title: "Bleu de Gex"
+        description: "Le Bleu de Gex (ou Bleu du Haut-Jura ou Septmoncel) est un fromage au lait cru de vache, à pâte persillée non présurée et non cuit."
+        price: 575
+    cheese_3:
+        title: "Bouquetou du Vernet"
+        description: "Le Bouquetou du Vernet est un fromage au lait de cru de chèvre."
+        price: 590
+    cheese_4:
+        title: "Bouton de Culotte"
+        description: "Le Bouton de Culotte est un petit fromage fabriqué à base de lait cru de chèvre. C’est l’un des plus petits fromages traditionnels de France, voire du monde."
+        price: 220
+    cheese_5:
+        title: "Brie de Brebis"
+        description: "Le Brie de Brebis est un fromage au lait pasteurisé de Brebis, à pâte molle et à croûte fleurie recouvert d’un léger duvet blanc."
+        price: 550
+    cheese_6:
+        title: "Carré Blanc"
+        description: "Le Carré Blanc est un fromage au lait entier de chèvre. Sa pâte blanche ou ivoire est recouverte d’une croûte naturelle, fine et fleurie."
+        price: 690
+    cheese_7:
+        title: "Carré du Vinage"
+        description: "Le Carré du Vinage est un fromage au lait cru de vache, à pâte molle à la croûte lavée."
+        price: 513
+    cheese_8:
+        title: "Carré Le Saulnois"
+        description: "Le Carré Le Saulnois est un fromage au lait pasteurisé de vache, à pâte molle à la croûte fleurie provenant du Grand Est."
+        price: 1200
+    cheese_9:
+        title: "Crottin du Béarn"
+        description: "Le Crottin du Béarn est un petit fromage fermier au lait cru de chèvre."
+        price: 500
+    cheese_10:
+        title: "Coeur cendré"
+        description: "Le coeur cendré est un fromage de chèvre au lait cru de chèvre, fabriqué par Johnny Blanc à Parthenay."
+        price: 850
+    cheese_11:
+        title: "Coeur de Savoie"
+        description: "Le coeur de Savoie est un fromage fabriqué en Haute-Savoie, à pâte pressée cuite."
+        price: 930
