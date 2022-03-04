@@ -6,6 +6,8 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CheeseListingRepository;
 use DateTime;
+use DateTimeInterface;
+use DateTimeImmutable;
 
 /**
  * @ORM\Entity(repositoryClass=CheeseListingRepository::class)
@@ -43,12 +45,17 @@ class CheeseListing
     /**
      * @ORM\Column(type="datetime")
      */
-    private DateTime $createdAt;
+    private DateTimeInterface $createdAt;
 
     /**
      * @ORM\Column(type="boolean")
      */
     private bool $isPublished;
+
+    public function __construct()
+    {
+        $this->createdAt = new DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -88,13 +95,7 @@ class CheeseListing
         return $this->price;
     }
 
-    public function setCreatedAt(DateTime $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
-
-    public function getCreatedAt(): ?DateTime
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
     }
