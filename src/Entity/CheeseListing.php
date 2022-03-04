@@ -66,9 +66,9 @@ class CheeseListing
         return $this->title;
     }
 
-    public function setDescription(string $description): self
+    public function setTextDescription(string $description): self
     {
-        $this->description = $description;
+        $this->description = str_replace(["\r\n", "\r", "\n"], "<br />", $description);
         return $this;
     }
 
