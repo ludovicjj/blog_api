@@ -2,7 +2,12 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\RangeFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
 use Carbon\Carbon;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CheeseListingRepository;
@@ -22,6 +27,10 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
     denormalizationContext: ['groups' => ['cheeses:write'], 'swagger_definition_name' => 'Write'],
     normalizationContext: ['groups' => ['cheeses:read'], 'swagger_definition_name' => 'Read'],
 )]
+#[ApiFilter(BooleanFilter::class, properties: ['isPublished'])]
+#[ApiFilter(SearchFilter::class, properties: ['title' => 'partial'])]
+#[ApiFilter(RangeFilter::class, properties: ['price'])]
+#[ApiFilter(PropertyFilter::class)]
 class CheeseListing
 {
     /**
@@ -29,25 +38,25 @@ class CheeseListing
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
     #[Groups(['cheeses:read', 'cheeses:write'])]
-    private string $title;
+    private ?string $title = null;
 
     /**
      * @ORM\Column(type="text")
      */
     #[Groups(['cheeses:read'])]
-    private string $description;
+    private ?string $description = null;
 
     /**
      * @ORM\Column(type="integer")
      */
     #[Groups(['cheeses:read', 'cheeses:write'])]
-    private int $price;
+    private ?int $price = null;
 
     /**
      * @ORM\Column(type="datetime")
@@ -103,6 +112,20 @@ class CheeseListing
     public function getDescription(): ?string
     {
         return $this->description;
+    }
+
+    /**
+     * Get a part of description limited to 40 characters
+     * @return string|null
+     */
+    #[Groups(['cheeses:read'])]
+    public function getShortDescription(): ?string
+    {
+        if (strlen($this->getDescription()) < 40) {
+            return strip_tags($this->getDescription());
+        }
+
+        return substr(strip_tags($this->getDescription()), 0, 40) . '...';
     }
 
     public function setPrice(int $price): self
