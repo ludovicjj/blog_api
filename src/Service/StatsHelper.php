@@ -3,14 +3,12 @@
 namespace App\Service;
 
 use App\Entity\DailyStats;
-use App\Repository\PostRepository;
 use DateTimeImmutable;
 use DateTimeInterface;
 
 class StatsHelper
 {
     public function __construct(
-        private PostRepository $postRepository,
         private ?array $criteria = null
     )
     {
@@ -46,7 +44,7 @@ class StatsHelper
 
     private function createDailyStats($statsData): DailyStats
     {
-        $mostPopularListings = $this->postRepository->findBy([], [], 4);
+        $mostPopularListings = [];
 
         return new DailyStats(
             new DateTimeImmutable($statsData['date']),

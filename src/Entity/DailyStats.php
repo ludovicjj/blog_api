@@ -10,20 +10,20 @@ use App\Filter\DailyStatsFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
 use DateTimeInterface;
 
-#[ApiResource(
-    collectionOperations: [
-        'get'
-    ],
-    itemOperations: [
-        'get',
-        'put'
-    ],
-    shortName: "daily-stats",
-    denormalizationContext: ['groups' => ['write:daily-stats']],
-    normalizationContext: ['groups' => ['read:daily-stats:collection']],
-    paginationItemsPerPage: 7
-)]
-#[ApiFilter(DailyStatsFilter::class, arguments: ["throwOnInvalid" => true])]
+//#[ApiResource(
+//    collectionOperations: [
+//        'get'
+//    ],
+//    itemOperations: [
+//        'get',
+//        'put'
+//    ],
+//    shortName: "daily-stats",
+//    denormalizationContext: ['groups' => ['write:daily-stats']],
+//    normalizationContext: ['groups' => ['read:daily-stats:collection']],
+//    paginationItemsPerPage: 7
+//)]
+//#[ApiFilter(DailyStatsFilter::class, arguments: ["throwOnInvalid" => true])]
 class DailyStats
 {
     #[Groups(['read:daily-stats:collection'])]
