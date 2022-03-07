@@ -15,6 +15,7 @@ use DateTimeInterface;
 use DateTimeImmutable;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=CheeseListingRepository::class)
@@ -46,18 +47,26 @@ class CheeseListing
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min=2,
+     *     max=50,
+     *     maxMessage="Maximum 50 caracteres ou moins."
+     * )
      */
     #[Groups(['cheeses:read', 'cheeses:write'])]
     private ?string $title = null;
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\NotBlank()
      */
     #[Groups(['cheeses:read'])]
     private ?string $description = null;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotBlank()
      */
     #[Groups(['cheeses:read', 'cheeses:write'])]
     private ?int $price = null;
