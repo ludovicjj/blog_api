@@ -17,6 +17,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity("username")
  */
 #[ApiResource(
+    collectionOperations: ['get', 'post'],
+    itemOperations: ['get', 'put', 'delete'],
     denormalizationContext: ['groups' => ['user:write']],
     normalizationContext: ['groups' => ['user:read']]
 )]
