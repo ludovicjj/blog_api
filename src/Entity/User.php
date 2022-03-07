@@ -21,8 +21,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     collectionOperations: ['get', 'post'],
     itemOperations: ['get', 'put', 'delete'],
-    denormalizationContext: ['groups' => ['user:write']],
-    normalizationContext: ['groups' => ['user:read']]
+    denormalizationContext: ['groups' => ['user:write'], 'swagger_definition_name' => 'Write'],
+    normalizationContext: ['groups' => ['user:read'], 'swagger_definition_name' => 'Read']
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
