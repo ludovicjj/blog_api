@@ -21,8 +21,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     collectionOperations: ['get', 'post'],
     itemOperations: ['get', 'put', 'delete'],
-    denormalizationContext: ['groups' => ['user:write'], 'swagger_definition_name' => 'Write'],
-    normalizationContext: ['groups' => ['user:read'], 'swagger_definition_name' => 'Read']
+    denormalizationContext: ['groups' => ['user:write'],  'swagger_definition_name' => 'write'],
+    normalizationContext: ['groups' => ['user:read'], 'swagger_definition_name' => 'read']
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -64,7 +64,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\OneToMany(targetEntity=CheeseListing::class, mappedBy="owner")
      */
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
     private $cheeseListings;
 
     public function __construct()

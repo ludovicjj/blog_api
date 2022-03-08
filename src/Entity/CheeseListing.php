@@ -37,8 +37,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         'pagination_items_per_page' => 10,
         'formats' => ['jsonld', 'json', 'html', 'jsonhal', 'csv' => ['text/csv']]
     ],
-    denormalizationContext: ['groups' => ['cheeses:write'], 'swagger_definition_name' => 'Write'],
-    normalizationContext: ['groups' => ['cheeses:read'], 'swagger_definition_name' => 'Read'],
+    denormalizationContext: ['groups' => ['cheeses:write']],
+    normalizationContext: ['groups' => ['cheeses:read']],
 )]
 #[ApiFilter(BooleanFilter::class, properties: ['isPublished'])]
 #[ApiFilter(SearchFilter::class, properties: ['title' => 'partial'])]
