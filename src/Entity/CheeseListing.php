@@ -23,17 +23,32 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 #[ApiResource(
     collectionOperations: ['get', 'post'],
-    itemOperations: ['get', 'put'],
+    itemOperations: [
+        'get' => [
+            'normalization_context' => [
+                'groups' => ['cheeses:read', 'cheeses:item:get'],
+                'swagger_definition_name' => 'item-get'
+            ]
+        ],
+        'put'
+    ],
     shortName: 'cheeses',
     attributes: [
         'pagination_items_per_page' => 10,
         'formats' => ['jsonld', 'json', 'html', 'jsonhal', 'csv' => ['text/csv']]
     ],
-    denormalizationContext: ['groups' => ['cheeses:write'], 'swagger_definition_name' => 'Write'],
-    normalizationContext: ['groups' => ['cheeses:read'], 'swagger_definition_name' => 'Read'],
+    denormalizationContext: ['groups' => ['cheeses:write']],
+    normalizationContext: ['groups' => ['cheeses:read']],
 )]
 #[ApiFilter(BooleanFilter::class, properties: ['isPublished'])]
-#[ApiFilter(SearchFilter::class, properties: ['title' => 'partial'])]
+#[ApiFilter(
+    SearchFilter::class,
+    properties: [
+        'title' => 'partial',
+        'owner' => 'exact',
+        'owner.username' => 'partial'
+    ]
+)]
 #[ApiFilter(RangeFilter::class, properties: ['price'])]
 #[ApiFilter(PropertyFilter::class)]
 class CheeseListing
@@ -54,7 +69,7 @@ class CheeseListing
      *     maxMessage="Maximum 50 caracteres ou moins."
      * )
      */
-    #[Groups(['cheeses:read', 'cheeses:write'])]
+    #[Groups(['cheeses:read', 'cheeses:write', 'user:read', 'user:write'])]
     private ?string $title = null;
 
     /**
@@ -68,7 +83,7 @@ class CheeseListing
      * @ORM\Column(type="integer")
      * @Assert\NotBlank()
      */
-    #[Groups(['cheeses:read', 'cheeses:write'])]
+    #[Groups(['cheeses:read', 'cheeses:write', 'user:read', 'user:write'])]
     private ?int $price = null;
 
     /**
@@ -80,6 +95,14 @@ class CheeseListing
      * @ORM\Column(type="boolean")
      */
     private bool $isPublished;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="cheeseListings")
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid()
+     */
+    #[Groups(['cheeses:read', 'cheeses:write'])]
+    private $owner;
 
     public function __construct()
     {
@@ -108,7 +131,7 @@ class CheeseListing
      * @param string $description
      * @return $this
      */
-    #[Groups(['cheeses:write'])]
+    #[Groups(['cheeses:write', 'user:write'])]
     #[SerializedName('description')]
     public function setTextDescription(string $description): self
     {
@@ -176,5 +199,17 @@ class CheeseListing
     public function getIsPublished(): ?bool
     {
         return $this->isPublished;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): self
+    {
+        $this->owner = $owner;
+
+        return $this;
     }
 }
