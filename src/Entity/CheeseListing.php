@@ -23,7 +23,15 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 #[ApiResource(
     collectionOperations: ['get', 'post'],
-    itemOperations: ['get', 'put'],
+    itemOperations: [
+        'get' => [
+            'normalization_context' => [
+                'groups' => ['cheeses:read', 'cheeses:item:get'],
+                'swagger_definition_name' => 'item-get'
+            ]
+        ],
+        'put'
+    ],
     shortName: 'cheeses',
     attributes: [
         'pagination_items_per_page' => 10,
@@ -54,7 +62,7 @@ class CheeseListing
      *     maxMessage="Maximum 50 caracteres ou moins."
      * )
      */
-    #[Groups(['cheeses:read', 'cheeses:write'])]
+    #[Groups(['cheeses:read', 'cheeses:write', 'user:read'])]
     private ?string $title = null;
 
     /**
@@ -68,7 +76,7 @@ class CheeseListing
      * @ORM\Column(type="integer")
      * @Assert\NotBlank()
      */
-    #[Groups(['cheeses:read', 'cheeses:write'])]
+    #[Groups(['cheeses:read', 'cheeses:write', 'user:read'])]
     private ?int $price = null;
 
     /**
@@ -84,6 +92,7 @@ class CheeseListing
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="cheeseListings")
      * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid()
      */
     #[Groups(['cheeses:read', 'cheeses:write'])]
     private $owner;
