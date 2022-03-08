@@ -62,7 +62,7 @@ class CheeseListing
      *     maxMessage="Maximum 50 caracteres ou moins."
      * )
      */
-    #[Groups(['cheeses:read', 'cheeses:write', 'user:read'])]
+    #[Groups(['cheeses:read', 'cheeses:write', 'user:read', 'user:write'])]
     private ?string $title = null;
 
     /**
@@ -76,7 +76,7 @@ class CheeseListing
      * @ORM\Column(type="integer")
      * @Assert\NotBlank()
      */
-    #[Groups(['cheeses:read', 'cheeses:write', 'user:read'])]
+    #[Groups(['cheeses:read', 'cheeses:write', 'user:read', 'user:write'])]
     private ?int $price = null;
 
     /**
@@ -124,7 +124,7 @@ class CheeseListing
      * @param string $description
      * @return $this
      */
-    #[Groups(['cheeses:write'])]
+    #[Groups(['cheeses:write', 'user:write'])]
     #[SerializedName('description')]
     public function setTextDescription(string $description): self
     {
