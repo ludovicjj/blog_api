@@ -32,7 +32,10 @@ use Symfony\Component\Validator\Constraints as Assert;
             'read' => false,
             'pagination_enabled' => false,
             'filters' => [],
-            'security' => 'is_granted("ROLE_USER")'
+            'security' => 'is_granted("ROLE_USER")',
+            'openapi_context' => [
+                'security' => ['cookieAuth' => ['']]
+            ]
         ]
     ],
     itemOperations: ['get', 'put', 'delete'],
