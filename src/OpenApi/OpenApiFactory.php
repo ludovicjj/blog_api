@@ -13,6 +13,16 @@ class OpenApiFactory implements OpenApiFactoryInterface
 
     public function __invoke(array $context = []): OpenApi
     {
-        return $this->decorated->__invoke($context);
+        $openApi =  $this->decorated->__invoke($context);
+
+        // https://swagger.io/docs/specification/authentication/cookie-authentication/
+        $securitySchemes = $openApi->getComponents()->getSecuritySchemes();
+        $securitySchemes['cookieAuth'] = new \ArrayObject([
+            'type' => 'apiKey',
+            'in' => 'cookie',
+            'name' => 'JSESSIONID'
+        ]);
+
+        return $openApi;
     }
 }
