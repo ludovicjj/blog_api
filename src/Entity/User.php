@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
+use App\Controller\MeController;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -21,7 +22,19 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity("username")
  */
 #[ApiResource(
-    collectionOperations: ['get', 'post'],
+    collectionOperations: [
+        'get',
+        'post',
+        'me' => [
+            'path' => '/me',
+            'method' => 'get',
+            'controller' => MeController::class,
+            'read' => false,
+            'pagination_enabled' => false,
+            'filters' => [],
+            'security' => 'is_granted("ROLE_USER")'
+        ]
+    ],
     itemOperations: ['get', 'put', 'delete'],
     denormalizationContext: ['groups' => ['user:write'],  'swagger_definition_name' => 'write'],
     normalizationContext: ['groups' => ['user:read'], 'swagger_definition_name' => 'read']
