@@ -40,6 +40,9 @@ class OpenApiFactory implements OpenApiFactoryInterface
                                 'properties' => [
                                     'email' => [
                                         'type' => 'string'
+                                    ],
+                                    'iri' => [
+                                        'type' => 'string'
                                     ]
                                 ]
                             ]
