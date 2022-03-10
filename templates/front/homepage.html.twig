@@ -13,7 +13,14 @@
     </form>
     <button type="button" id="logout" data-action="{{ path('app_logout') }}">Deconnexion</button>
 
-    {{ user }}
+    {% if user is not same as('null')%}
+        <div>
+            <h5>Current user data</h5>
+            <p>
+                {{ user }}
+            </p>
+        </div>
+    {% endif %}
     <script>
         let form = document.querySelector('#login');
         const logout = document.querySelector('#logout');
