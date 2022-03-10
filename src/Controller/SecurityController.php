@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class SecurityController extends AbstractController
 {
     #[Route(path: '/login', name: 'app_login', methods: ['POST'])]
-    public function login(IriConverterInterface $iriConverter)
+    public function login(IriConverterInterface $iriConverter): Response
     {
         if (!$this->isGranted("IS_AUTHENTICATED_FULLY")) {
             return $this->json([
@@ -18,11 +18,10 @@ class SecurityController extends AbstractController
             ], 400);
         }
 
-        return new Response(
-            null,
-            Response::HTTP_NO_CONTENT,
-            ['Location' => $iriConverter->getIriFromItem($this->getUser())]
-        );
+        return $this->json([
+            'email' => $this->getUser()->getUserIdentifier(),
+            'iri' => $iriConverter->getIriFromItem($this->getUser())
+        ]);
     }
 
     #[Route(path: '/logout', name: 'app_logout', methods: ['POST'])]
