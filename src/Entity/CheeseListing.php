@@ -22,7 +22,12 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="cheese_listing")
  */
 #[ApiResource(
-    collectionOperations: ['get', 'post'],
+    collectionOperations: [
+        'get',
+        'post' => [
+            'security' => 'is_granted("ROLE_USER")'
+        ]
+    ],
     itemOperations: [
         'get' => [
             'normalization_context' => [
@@ -30,7 +35,12 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'swagger_definition_name' => 'item-get'
             ]
         ],
-        'put'
+        'put' => [
+            'security' => 'is_granted("ROLE_USER")'
+        ],
+        'delete' => [
+            'security' => 'is_granted("ROLE_ADMIN")'
+        ]
     ],
     shortName: 'cheeses',
     attributes: [
