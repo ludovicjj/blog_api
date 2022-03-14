@@ -10,7 +10,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class CustomApiTestCase extends ApiTestCase
 {
-    protected function createUser(string $email, string $password): User
+    protected function createUser(string $email, string $password, array $roles = []): User
     {
         $container = static::getContainer();
 
@@ -20,7 +20,8 @@ class CustomApiTestCase extends ApiTestCase
         $user = new User();
         $user->setEmail($email)
              ->setPassword($encoder->hashPassword($user, $password))
-             ->setUsername(substr($email, 0, strpos($email, '@')));
+             ->setUsername(substr($email, 0, strpos($email, '@')))
+             ->setRoles($roles);
 
         $em = $container->get('doctrine')->getManager();
         $em->persist($user);
