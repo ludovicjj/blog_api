@@ -32,6 +32,7 @@ class CheeseListingResourceTest extends CustomApiTestCase
         $client = self::createClient();
         $user1 = $this->createUser('user1@example.com', 'foo');
         $user2 = $this->createUser('user2@example.com', 'foo');
+        $this->createUser('admin@example.com', 'foo', ['ROLE_ADMIN']);
 
         $cheeseListing = new CheeseListing();
         $cheeseListing
@@ -44,7 +45,7 @@ class CheeseListingResourceTest extends CustomApiTestCase
         $em->persist($cheeseListing);
         $em->flush();
 
-        $this->login($client, 'user2@example.com', 'foo');
+        $this->login($client, 'admin@example.com', 'foo');
 
         $client->request('PUT', '/api/cheeses/' . $cheeseListing->getId(), [
             'json' => [
@@ -52,6 +53,6 @@ class CheeseListingResourceTest extends CustomApiTestCase
                 'owner' => '/api/users/'.$user2->getId()
             ]
         ]);
-        $this->assertResponseStatusCodeSame(403, 'only author can update');
+        $this->assertResponseStatusCodeSame(200, 'only author can update');
     }
 }
