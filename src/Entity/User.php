@@ -24,7 +24,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     collectionOperations: [
         'get',
-        'post',
+        'post' => [
+            'security' => 'is_granted("IS_AUTHENTICATED_ANONYMOUSLY")'
+        ],
         'me' => [
             'path' => '/me',
             'method' => 'get',
@@ -38,7 +40,16 @@ use Symfony\Component\Validator\Constraints as Assert;
             ]
         ]
     ],
-    itemOperations: ['get', 'put', 'delete'],
+    itemOperations: [
+        'get',
+        'put' => [
+            'security' => 'is_granted("ROLE_USER") and object == user'
+        ],
+        'delete' => [
+            'security' => 'is_granted("ROLE_ADMIN")'
+        ]
+    ],
+    attributes: ["security" => "is_granted('ROLE_USER')"],
     denormalizationContext: ['groups' => ['user:write'],  'swagger_definition_name' => 'write'],
     normalizationContext: ['groups' => ['user:read'], 'swagger_definition_name' => 'read']
 )]
