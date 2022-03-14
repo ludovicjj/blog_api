@@ -5,6 +5,7 @@ namespace App\Test;
 use ApiPlatform\Core\Bridge\Symfony\Bundle\Test\ApiTestCase;
 use ApiPlatform\Core\Bridge\Symfony\Bundle\Test\Client;
 use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class CustomApiTestCase extends ApiTestCase
@@ -46,5 +47,11 @@ class CustomApiTestCase extends ApiTestCase
         $user = $this->createUser($email, $password);
         $this->login($client, $email, $password);
         return $user;
+    }
+
+    protected function getEntityManager() : EntityManagerInterface
+    {
+        $container = static::getContainer();
+        return $container->get('doctrine')->getManager();
     }
 }
