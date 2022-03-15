@@ -3,7 +3,6 @@
 namespace App\Tests\functional;
 
 use App\Entity\CheeseListing;
-use App\Entity\User;
 use App\Test\CustomApiTestCase;
 use Hautelook\AliceBundle\PhpUnit\ReloadDatabaseTrait;
 
