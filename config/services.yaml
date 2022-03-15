@@ -28,6 +28,11 @@ services:
         arguments: ['@App\OpenApi\OpenApiFactory.inner']
         autoconfigure: false
 
+    App\Serializer\AdminContextBuilder:
+        decorates: 'api_platform.serializer.context_builder'
+        arguments: [ '@App\Serializer\AdminContextBuilder.inner' ]
+        autoconfigure: false
+
     App\DataProvider\DependenciesDataProvider:
         arguments: ['%kernel.project_dir%']
 
