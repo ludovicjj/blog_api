@@ -28,7 +28,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted("ROLE_USER")'
         ],
         'post' => [
-            'security' => 'is_granted("PUBLIC_ACCESS")'
+            'security' => 'is_granted("PUBLIC_ACCESS")',
+            'validation_groups' => ['Default', 'create']
         ],
         'me' => [
             'path' => '/me',
