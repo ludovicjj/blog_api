@@ -88,6 +88,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[Groups(['user:write'])]
     #[SerializedName('password')]
+    #[Assert\NotBlank(groups: ['create'])]
     private $plainPassword;
 
     /**
