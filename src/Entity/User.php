@@ -79,6 +79,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="json")
      */
+    #[Groups(['admin:write'])]
     private $roles = [];
 
     /**
@@ -98,6 +99,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[Groups(['user:read', 'user:write', 'cheeses:item:get', 'cheeses:write'])]
     private $username;
+
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    #[Groups(['admin:read', 'user:write'])]
+    private $phoneNumber;
 
     /**
      * @ORM\OneToMany(targetEntity=CheeseListing::class, mappedBy="owner", cascade={"persist"}, orphanRemoval=true)
@@ -231,5 +238,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->plainPassword = $plainPassword;
         return $this;
+    }
+
+    public function setPhoneNumber(?string $phoneNumber): self
+    {
+        $this->phoneNumber = $phoneNumber;
+        return $this;
+    }
+
+    public function getPhoneNumber(): ?string
+    {
+        return $this->phoneNumber;
     }
 }
