@@ -33,6 +33,13 @@ services:
         arguments: [ '@App\Serializer\AdminContextBuilder.inner' ]
         autoconfigure: false
 
+    App\ApiPlatform\AutoGroupResourceMetadataFactory:
+        decorates: 'api_platform.metadata.resource.metadata_factory'
+        arguments: ['@App\ApiPlatform\AutoGroupResourceMetadataFactory.inner']
+        # causes this to decorate around the cached factory so that
+        # our service is never cached (which, of course, can have performance implications!)
+        decoration_priority: -20
+
     App\DataProvider\DependenciesDataProvider:
         arguments: ['%kernel.project_dir%']
 
