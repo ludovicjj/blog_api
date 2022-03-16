@@ -54,9 +54,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         'delete' => [
             'security' => 'is_granted("ROLE_ADMIN")'
         ]
-    ],
-    denormalizationContext: ['groups' => ['user:write'],  'swagger_definition_name' => 'write'],
-    normalizationContext: ['groups' => ['user:read'], 'swagger_definition_name' => 'read']
+    ]
 )]
 #[ApiFilter(PropertyFilter::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -97,7 +95,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank()
      */
-    #[Groups(['user:read', 'user:write', 'cheese_listing:item:get', 'cheese_listing:write'])]
+    #[Groups(['user:read', 'user:write', 'cheese:item:get', 'cheese:write'])]
     private $username;
 
     /**
