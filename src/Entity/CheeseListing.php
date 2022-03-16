@@ -47,9 +47,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     attributes: [
         'pagination_items_per_page' => 10,
         'formats' => ['jsonld', 'json', 'html', 'jsonhal', 'csv' => ['text/csv']]
-    ],
-    denormalizationContext: ['groups' => ['cheeses:write']],
-    normalizationContext: ['groups' => ['cheeses:read']],
+    ]
 )]
 #[ApiFilter(BooleanFilter::class, properties: ['isPublished'])]
 #[ApiFilter(
@@ -80,21 +78,21 @@ class CheeseListing
      *     maxMessage="Maximum 50 caracteres ou moins."
      * )
      */
-    #[Groups(['cheeses:read', 'cheeses:write', 'user:read', 'user:write'])]
+    #[Groups(['cheese_listing:read', 'cheese_listing:write', 'user:read', 'user:write'])]
     private ?string $title = null;
 
     /**
      * @ORM\Column(type="text")
      * @Assert\NotBlank()
      */
-    #[Groups(['cheeses:read'])]
+    #[Groups(['cheese_listing:read'])]
     private ?string $description = null;
 
     /**
      * @ORM\Column(type="integer")
      * @Assert\NotBlank()
      */
-    #[Groups(['cheeses:read', 'cheeses:write', 'user:read', 'user:write'])]
+    #[Groups(['cheese_listing:read', 'cheese_listing:write', 'user:read', 'user:write'])]
     private ?int $price = null;
 
     /**
@@ -112,7 +110,7 @@ class CheeseListing
      * @ORM\JoinColumn(nullable=false)
      * @Assert\Valid()
      */
-    #[Groups(['cheeses:read', 'cheeses:write'])]
+    #[Groups(['cheese_listing:read', 'cheese_listing:write'])]
     private $owner;
 
     public function __construct()
@@ -142,7 +140,7 @@ class CheeseListing
      * @param string $description
      * @return $this
      */
-    #[Groups(['cheeses:write', 'user:write'])]
+    #[Groups(['cheese_listing:write', 'user:write'])]
     #[SerializedName('description')]
     public function setTextDescription(string $description): self
     {
@@ -165,7 +163,7 @@ class CheeseListing
      * Get a part of description limited to 40 characters
      * @return string|null
      */
-    #[Groups(['cheeses:read'])]
+    #[Groups(['cheese_listing:read'])]
     public function getShortDescription(): ?string
     {
         if (strlen($this->getDescription()) < 40) {
@@ -195,7 +193,7 @@ class CheeseListing
      * How long ago this cheese item was added in text format, example "1 day ago".
      * @return string
      */
-    #[Groups(['cheeses:read'])]
+    #[Groups(['cheese_listing:read'])]
     public function getCreatedAtAgo(): string
     {
         return Carbon::instance($this->getCreatedAt())->diffForHumans();
