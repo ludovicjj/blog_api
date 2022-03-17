@@ -16,6 +16,7 @@ use DateTimeImmutable;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator\IsValidOwner;
 
 /**
  * @ORM\Entity(repositoryClass=CheeseListingRepository::class)
@@ -103,6 +104,8 @@ class CheeseListing
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="cheeseListings")
      * @ORM\JoinColumn(nullable=false)
+     * @IsValidOwner()
+     * @Assert\NotBlank
      */
     #[Groups(['cheese:read', 'cheese:collection:post'])]
     private $owner;
