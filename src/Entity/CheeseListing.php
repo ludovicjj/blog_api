@@ -103,9 +103,8 @@ class CheeseListing
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="cheeseListings")
      * @ORM\JoinColumn(nullable=false)
-     * @Assert\Valid()
      */
-    #[Groups(['cheese:read', 'cheese:write'])]
+    #[Groups(['cheese:read', 'cheese:collection:post'])]
     private $owner;
 
     public function __construct()
