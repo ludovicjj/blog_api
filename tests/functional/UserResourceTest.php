@@ -46,31 +46,45 @@ class UserResourceTest extends CustomApiTestCase
     public function testGetUser()
     {
         $client = static::createClient();
-        $user = $this->createUserAndLogin($client, 'test@example.com', 'foo');
-        $user->setPhoneNumber('0199999999');
+        $user = $this->createUser('user1@example.com', 'foo');
+        $user->setPhoneNumber('0123456789');
         $em = $this->getEntityManager();
         $em->flush();
 
-        $response = $client->request('GET', '/api/users/'.$user->getId());
+        $userId = $user->getId();
+        $this->createUserAndLogin($client, 'user2@example.com', 'foo');
+
+
+        $response = $client->request('GET', '/api/users/'.$userId);
         $this->assertJsonContains([
-            'username' => 'test'
+            'username' => 'user1',
+            'isMe' => false
         ]);
         $data = $response->toArray();
         $this->assertArrayNotHasKey('phoneNumber', $data);
 
+        $this->login($client, 'user1@example.com', 'foo');
+        $client->request('GET', '/api/users/'.$userId);
+        $this->assertJsonContains([
+            'username' => 'user1',
+            'phoneNumber' => '0123456789',
+            'isMe' => true
+        ]);
+
         // refresh user because entity manager don't remember it handle him
         // and update his role
-        $user = $em->getRepository(User::class)->findOneBy(['id' => $user->getId()]);
+        $user = $em->getRepository(User::class)->findOneBy(['username' => 'user2']);
         $user->setRoles(['ROLE_ADMIN']);
         $em->flush();
 
         // Re login to update role in security component
         // And test if admin user can read phone number in response
-        $this->login($client, 'test@example.com', 'foo');
-        $client->request('GET', '/api/users/'.$user->getId());
+        $this->login($client, 'user2@example.com', 'foo');
+        $client->request('GET', '/api/users/'.$userId);
         $this->assertJsonContains([
-            'username' => 'test',
-            'phoneNumber' => '0199999999'
+            'username' => 'user1',
+            'phoneNumber' => '0123456789',
+            'isMe' => false
         ]);
     }
 }
