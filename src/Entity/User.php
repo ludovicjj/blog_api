@@ -6,6 +6,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
 use App\Controller\MeController;
+use App\Repository\CheeseListingRepository;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -108,7 +109,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\OneToMany(targetEntity=CheeseListing::class, mappedBy="owner", cascade={"persist"}, orphanRemoval=true)
      * @Assert\Valid()
      */
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:write'])]
     private $cheeseListings;
 
     public function __construct()
@@ -204,6 +205,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getCheeseListings(): Collection
     {
         return $this->cheeseListings;
+    }
+
+    #[Groups(['user:read'])]
+    #[SerializedName('cheeseListings')]
+    public function getPublishedCheeseListings(): Collection
+    {
+        return $this->cheeseListings->matching(CheeseListingRepository::createPublishedCriteria());
     }
 
     public function addCheeseListing(CheeseListing $cheeseListing): self
