@@ -39,18 +39,14 @@ class CheeseListingIsPublishedExtension implements QueryCollectionExtensionInter
 
     private function addWhere(QueryBuilder $queryBuilder, string $resourceClass): void
     {
-        // check resource class
         if ($resourceClass !== CheeseListing::class) {
             return;
         }
 
-        // case ROLE_ADMIN
-        // admin user has access to published and unpublished CheeseListing
         if ($this->security->isGranted('ROLE_ADMIN')) {
             return;
         }
 
-        // case ROLE_USER
         $rootAlias = $queryBuilder->getRootAliases()[0];
         if (!$this->security->getUser()) {
             $queryBuilder->andWhere(sprintf('%s.isPublished = :is_published', $rootAlias));
