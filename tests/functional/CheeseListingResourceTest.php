@@ -3,6 +3,7 @@
 namespace App\Tests\functional;
 
 use App\Entity\CheeseListing;
+use App\Entity\User;
 use App\Test\CustomApiTestCase;
 use Hautelook\AliceBundle\PhpUnit\ReloadDatabaseTrait;
 
@@ -48,6 +49,19 @@ class CheeseListingResourceTest extends CustomApiTestCase
         $this->assertResponseStatusCodeSame(201);
     }
 
+    public function testGetCheeseListingCollection()
+    {
+        $client = self::createClient();
+        $user = $this->createUser('test@example.com', 'foo');
+
+        $this->createCheeseListing('cheese1', 'cheese', 100, $user);
+        $this->createCheeseListing('cheese2', 'cheese', 100, $user, true);
+        $this->createCheeseListing('cheese3', 'cheese', 100, $user, true);
+
+        $client->request('GET', '/api/cheeses');
+        $this->assertJsonContains(['hydra:totalItems' => 2]);
+    }
+
     public function testUpdateCheeseListing()
     {
         $client = self::createClient();
@@ -75,5 +89,28 @@ class CheeseListingResourceTest extends CustomApiTestCase
             ]
         ]);
         $this->assertResponseStatusCodeSame(200, 'only author can update');
+    }
+
+    private function createCheeseListing(
+        string $title,
+        string $description,
+        int $price,
+        User $owner,
+        bool $isPublished = false
+    ): CheeseListing
+    {
+        $cheeseListing = new CheeseListing();
+        $cheeseListing
+            ->setTitle($title)
+            ->setDescription($description)
+            ->setPrice($price)
+            ->setOwner($owner)
+            ->setIsPublished($isPublished);
+
+        $em = $this->getEntityManager();
+        $em->persist($cheeseListing);
+        $em->flush();
+
+        return $cheeseListing;
     }
 }
