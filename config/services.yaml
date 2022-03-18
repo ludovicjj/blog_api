@@ -45,3 +45,7 @@ services:
 
     App\DataFixtures\Provider\PasswordProvider:
         tags: [{ name: nelmio_alice.faker.provider }]
+
+    App\Doctrine\CheeseListingSetOwnerListener:
+        tags:
+            - { name: 'doctrine.orm.entity_listener', event: 'prePersist', entity: 'App\Entity\CheeseListing'}
