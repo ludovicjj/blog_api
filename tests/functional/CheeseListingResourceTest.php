@@ -70,10 +70,17 @@ class CheeseListingResourceTest extends CustomApiTestCase
         $client->request('GET', '/api/cheeses/'.$cheese->getId());
         $this->assertResponseStatusCodeSame(404);
 
-        $admin = $this->createUser('admin@example.com', 'foo', ['ROLE_ADMIN']);
+        $this->login($client,'user@example.com', 'foo');
+        $response = $client->request('GET', '/api/users/'.$user->getId());
+        $data = $response->toArray();
+        $this->assertEmpty($data['cheeseListings']);
+
+        $this->createUser('admin@example.com', 'foo', ['ROLE_ADMIN']);
         $this->login($client, 'admin@example.com', 'foo');
         $client->request('GET', '/api/cheeses/'.$cheese->getId());
         $this->assertResponseStatusCodeSame(200);
+
+
 
     }
 
@@ -84,56 +91,24 @@ class CheeseListingResourceTest extends CustomApiTestCase
         $user2 = $this->createUser('user2@example.com', 'foo');
         $this->createUser('admin@example.com', 'foo', ['ROLE_ADMIN']);
 
-        $cheese1 = $this->createCheeseListing('cheese1', 'cheese', 1000, $user1);
-        $cheese2 = $this->createCheeseListing('cheese2', 'cheese', 1000, $user1, true);
+        $cheese1 = $this->createCheeseListing('cheese1', 'cheese', 1000, $user1, true);
+        $cheese2 = $this->createCheeseListing('cheese2', 'cheese', 1000, $user1);
 
         $this->login($client, 'user2@example.com', 'foo');
-        $client->request('PUT', '/api/cheeses/' . $cheese1->getId(), [
-            'json' => [
-                'title' => 'new title'
-            ]
-        ]);
-        $this->assertResponseStatusCodeSame(
-            404,
-            'Query extension: Cheese is not published and only owner can edit this cheese'
-        );
 
-        $client->request('PUT', '/api/cheeses/' . $cheese2->getId(), [
-            'json' => [
-                'title' => 'new title'
-            ]
+        $client->request('PUT', '/api/cheeses/'.$cheese2->getId(), [
+            'json' => ['title' => 'updated']
         ]);
-        $this->assertResponseStatusCodeSame(
-            404,
-            'Query extension: cheese is published but invalid owner'
-        );
+        $this->assertResponseStatusCodeSame(404);
 
-        $this->login($client, 'user1@example.com', 'foo');
-        $client->request('PUT', '/api/cheeses/' . $cheese1->getId(), [
-            'json' => [
-                'title' => 'new title'
-            ]
+        $client->request('PUT', '/api/cheeses/'.$cheese1->getId(), [
+            'json' => ['title' => 'updated']
         ]);
-        $this->assertResponseStatusCodeSame(
-            404,
-            'Query extension: Valid owner but only published cheese can be edit'
-        );
+        $this->assertResponseStatusCodeSame(404);
 
-        $client->request('PUT', '/api/cheeses/' . $cheese2->getId(), [
-            'json' => [
-                'title' => 'new title'
-            ]
-        ]);
-        $this->assertResponseStatusCodeSame(
-            200,
-            'Query extension: Valid owner and cheese is published'
-        );
-
-        $this->login($client, 'admin@example.com', 'foo');
-        $client->request('PUT', '/api/cheeses/' . $cheese1->getId(), [
-            'json' => [
-                'title' => 'Admin title'
-            ]
+        $this->logIn($client, 'user1@example.com', 'foo');
+        $client->request('PUT', '/api/cheeses/'.$cheese1->getId(), [
+            'json' => ['title' => 'updated']
         ]);
         $this->assertResponseStatusCodeSame(200);
     }
