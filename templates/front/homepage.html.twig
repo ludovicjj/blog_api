@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+{%  block body %}
+    <form id="login" action="{{ path('app_login') }}">
+        <div class="form-group">
+            <label for="email">Your email</label>
+            <input type="text" name="email" id="email"/>
+        </div>
+        <div class="form-group">
+            <label for="password">Your password</label>
+            <input type="password" name="password" id="password"/>
+        </div>
+        <button type="submit">Connexion</button>
+    </form>
+    <button type="button" id="logout" data-action="{{ path('app_logout') }}">Deconnexion</button>
+
+    {% if user is not same as('null')%}
+        <div>
+            <h5>Current user data</h5>
+            <p>
+                {{ user }}
+            </p>
+        </div>
+    {% endif %}
+    <script>
+        let form = document.querySelector('#login');
+        const logout = document.querySelector('#logout');
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            let formData = new FormData(form);
+            let object = {}
+            formData.forEach((value, key) => object[key] = value)
+
+            let response = await fetch(form.getAttribute('action'), {
+                body: JSON.stringify(object),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                method: 'POST'
+            })
+            let data = await response.json();
+            console.log(data)
+        })
+
+        logout.addEventListener('click', async function(e) {
+            e.preventDefault();
+            await fetch(this.getAttribute('data-action'), {
+                method: 'POST'
+            })
+        })
+    </script>
+{% endblock %}

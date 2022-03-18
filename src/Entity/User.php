@@ -5,6 +5,8 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
+use App\Controller\MeController;
+use App\Repository\CheeseListingRepository;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,6 +15,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -21,10 +24,38 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity("username")
  */
 #[ApiResource(
-    collectionOperations: ['get', 'post'],
-    itemOperations: ['get', 'put', 'delete'],
-    denormalizationContext: ['groups' => ['user:write'],  'swagger_definition_name' => 'write'],
-    normalizationContext: ['groups' => ['user:read'], 'swagger_definition_name' => 'read']
+    collectionOperations: [
+        'get'=> [
+            'security' => 'is_granted("ROLE_USER")'
+        ],
+        'post' => [
+            'security' => 'is_granted("PUBLIC_ACCESS")',
+            'validation_groups' => ['Default', 'create']
+        ],
+        'me' => [
+            'path' => '/me',
+            'method' => 'get',
+            'controller' => MeController::class,
+            'read' => false,
+            'pagination_enabled' => false,
+            'filters' => [],
+            'security' => 'is_granted("ROLE_USER")',
+            'openapi_context' => [
+                'security' => ['cookieAuth' => ['']]
+            ]
+        ]
+    ],
+    itemOperations: [
+        'get' => [
+            'security' => 'is_granted("ROLE_USER")'
+        ],
+        'put' => [
+            'security' => 'is_granted("ROLE_USER") and object == user'
+        ],
+        'delete' => [
+            'security' => 'is_granted("ROLE_ADMIN")'
+        ]
+    ]
 )]
 #[ApiFilter(PropertyFilter::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -47,28 +78,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="json")
      */
+    #[Groups(['admin:write'])]
     private $roles = [];
 
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
-     * @Assert\NotBlank()
      */
-    #[Groups(['user:write'])]
     private $password;
+
+    #[Groups(['user:write'])]
+    #[SerializedName('password')]
+    #[Assert\NotBlank(groups: ['create'])]
+    private $plainPassword;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank()
      */
-    #[Groups(['user:read', 'user:write', 'cheeses:item:get', 'cheeses:write'])]
+    #[Groups(['user:read', 'user:write', 'cheese:item:get'])]
     private $username;
+
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    #[Groups(['admin:read', 'user:write', 'owner:read'])]
+    private $phoneNumber;
 
     /**
      * @ORM\OneToMany(targetEntity=CheeseListing::class, mappedBy="owner", cascade={"persist"}, orphanRemoval=true)
      * @Assert\Valid()
      */
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:write'])]
     private $cheeseListings;
 
     public function __construct()
@@ -100,7 +141,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->username;
+        return (string) $this->email;
     }
 
     /**
@@ -143,7 +184,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials()
     {
         // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+         $this->plainPassword = null;
     }
 
     public function getUsername(): ?string
@@ -166,6 +207,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->cheeseListings;
     }
 
+    #[Groups(['user:read'])]
+    #[SerializedName('cheeseListings')]
+    public function getPublishedCheeseListings(): Collection
+    {
+        return $this->cheeseListings->matching(CheeseListingRepository::createPublishedCriteria());
+    }
+
     public function addCheeseListing(CheeseListing $cheeseListing): self
     {
         if (!$this->cheeseListings->contains($cheeseListing)) {
@@ -186,5 +234,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+    public function setPlainPassword(string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+        return $this;
+    }
+
+    public function setPhoneNumber(?string $phoneNumber): self
+    {
+        $this->phoneNumber = $phoneNumber;
+        return $this;
+    }
+
+    public function getPhoneNumber(): ?string
+    {
+        return $this->phoneNumber;
     }
 }

@@ -19,6 +19,7 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+            - '../src/Test/'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
@@ -27,5 +28,24 @@ services:
         arguments: ['@App\OpenApi\OpenApiFactory.inner']
         autoconfigure: false
 
+    App\Serializer\AdminContextBuilder:
+        decorates: 'api_platform.serializer.context_builder'
+        arguments: [ '@App\Serializer\AdminContextBuilder.inner' ]
+        autoconfigure: false
+
+    App\ApiPlatform\AutoGroupResourceMetadataFactory:
+        decorates: 'api_platform.metadata.resource.metadata_factory'
+        arguments: ['@App\ApiPlatform\AutoGroupResourceMetadataFactory.inner']
+        # causes this to decorate around the cached factory so that
+        # our service is never cached (which, of course, can have performance implications!)
+        decoration_priority: -20
+
     App\DataProvider\DependenciesDataProvider:
         arguments: ['%kernel.project_dir%']
+
+    App\DataFixtures\Provider\PasswordProvider:
+        tags: [{ name: nelmio_alice.faker.provider }]
+
+    App\Doctrine\CheeseListingSetOwnerListener:
+        tags:
+            - { name: 'doctrine.orm.entity_listener', event: 'prePersist', entity: 'App\Entity\CheeseListing'}
