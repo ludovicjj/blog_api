@@ -6,9 +6,14 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\QueryCollectionExtensionInter
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use App\Entity\CheeseListing;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\Security\Core\Security;
 
 class CheeseListingIsPublishedExtension implements QueryCollectionExtensionInterface
 {
+    public function __construct(private Security $security)
+    {
+    }
+
     public function applyToCollection(
         QueryBuilder $queryBuilder,
         QueryNameGeneratorInterface $queryNameGenerator,
@@ -22,6 +27,10 @@ class CheeseListingIsPublishedExtension implements QueryCollectionExtensionInter
     private function addWhere(QueryBuilder $queryBuilder, string $resourceClass): void
     {
         if ($resourceClass !== CheeseListing::class) {
+            return;
+        }
+
+        if ($this->security->isGranted('ROLE_ADMIN')) {
             return;
         }
 
