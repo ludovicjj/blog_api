@@ -99,6 +99,7 @@ class CheeseListing
     /**
      * @ORM\Column(type="boolean")
      */
+    #[Groups(['cheese:item:put'])]
     private bool $isPublished;
 
     /**
