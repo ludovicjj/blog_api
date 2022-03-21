@@ -2,12 +2,13 @@
 
 namespace App\DataPersister;
 
+use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use ApiPlatform\Core\DataPersister\DataPersisterInterface;
 use App\Entity\User;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class UserPersister implements DataPersisterInterface
+class UserPersister implements ContextAwareDataPersisterInterface
 {
     public function __construct(
         private DataPersisterInterface $decoratedDataPersister,
@@ -17,13 +18,16 @@ class UserPersister implements DataPersisterInterface
     {
     }
 
-    public function supports($data): bool
+    public function supports($data, array $context = []): bool
     {
         return $data instanceof User;
     }
 
-    public function persist($data)
+    public function persist($data, array $context = [])
     {
+        if (($context['item_operation_name'] ?? null) === 'put') {
+            $this->appLogger->info(sprintf('User %s is being updated', $data->getEmail()));
+        }
         if (!$data->getId()) {
             $this->appLogger->info(sprintf('User %s just registered! Eureka!', $data->getEmail()));
         }
@@ -37,7 +41,7 @@ class UserPersister implements DataPersisterInterface
         return $data;
     }
 
-    public function remove($data)
+    public function remove($data, array $context = [])
     {
         $this->decoratedDataPersister->remove($data);
     }
