@@ -4,13 +4,12 @@ namespace App\DataPersister;
 
 use ApiPlatform\Core\DataPersister\DataPersisterInterface;
 use App\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserPersister implements DataPersisterInterface
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
+        private DataPersisterInterface $decoratedDataPersister,
         private UserPasswordHasherInterface $hasher
     )
     {
@@ -28,14 +27,13 @@ class UserPersister implements DataPersisterInterface
         }
         $data->eraseCredentials();
 
-        $this->entityManager->persist($data);
-        $this->entityManager->flush();
+        $this->decoratedDataPersister->persist($data);
 
         return $data;
     }
 
     public function remove($data)
     {
-        // TODO: Implement remove() method.
+        $this->decoratedDataPersister->remove($data);
     }
 }
