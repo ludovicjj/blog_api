@@ -5,11 +5,11 @@ namespace App\Tests\functional;
 use App\Entity\CheeseListing;
 use App\Entity\User;
 use App\Test\CustomApiTestCase;
-use Hautelook\AliceBundle\PhpUnit\ReloadDatabaseTrait;
+use Hautelook\AliceBundle\PhpUnit\RecreateDatabaseTrait;
 
 class CheeseListingResourceTest extends CustomApiTestCase
 {
-    use ReloadDatabaseTrait;
+    use RecreateDatabaseTrait;
 
     public function testCreateCheeseListing()
     {
@@ -79,38 +79,46 @@ class CheeseListingResourceTest extends CustomApiTestCase
         $this->login($client, 'admin@example.com', 'foo');
         $client->request('GET', '/api/cheeses/'.$cheese->getId());
         $this->assertResponseStatusCodeSame(200);
-
-
-
     }
 
     public function testUpdateCheeseListing()
     {
         $client = self::createClient();
         $user1 = $this->createUser('user1@example.com', 'foo');
-        $user2 = $this->createUser('user2@example.com', 'foo');
+        $this->createUser('user2@example.com', 'foo');
         $this->createUser('admin@example.com', 'foo', ['ROLE_ADMIN']);
 
-        $cheese1 = $this->createCheeseListing('cheese1', 'cheese', 1000, $user1, true);
-        $cheese2 = $this->createCheeseListing('cheese2', 'cheese', 1000, $user1);
+        $cheese = $this->createCheeseListing('cheese2', 'cheese', 1000, $user1);
 
         $this->login($client, 'user2@example.com', 'foo');
 
-        $client->request('PUT', '/api/cheeses/'.$cheese2->getId(), [
+        $client->request('PUT', '/api/cheeses/'.$cheese->getId(), [
             'json' => ['title' => 'updated']
         ]);
-        $this->assertResponseStatusCodeSame(404);
-
-        $client->request('PUT', '/api/cheeses/'.$cheese1->getId(), [
-            'json' => ['title' => 'updated']
-        ]);
-        $this->assertResponseStatusCodeSame(404);
+        $this->assertResponseStatusCodeSame(403);
 
         $this->logIn($client, 'user1@example.com', 'foo');
-        $client->request('PUT', '/api/cheeses/'.$cheese1->getId(), [
+        $client->request('PUT', '/api/cheeses/'.$cheese->getId(), [
             'json' => ['title' => 'updated']
         ]);
         $this->assertResponseStatusCodeSame(200);
+    }
+
+    public function testPublishCheeseListing()
+    {
+        $client = self::createClient();
+        $user = $this->createUser('user@example.com', 'foo');
+        $cheese = $this->createCheeseListing('cheese1', 'cheese', 1000, $user);
+        $this->login($client, 'user@example.com', 'foo');
+
+        $client->request('PUT', '/api/cheeses/'.$cheese->getId(), [
+            'json' => ['isPublished' => true]
+        ]);
+        $this->assertResponseStatusCodeSame(200);
+        $em = $this->getEntityManager();
+        /** @var CheeseListing $cheese */
+        $cheese = $em->getRepository(CheeseListing::class)->findOneBy(['id' => $cheese->getId()]);
+        $this->assertTrue($cheese->getIsPublished());
     }
 
     private function createCheeseListing(
