@@ -44,6 +44,10 @@ services:
         bind:
             $decoratedDataPersister: '@api_platform.doctrine.orm.data_persister'
 
+    App\DataPersister\CheeseListingPersister:
+        bind:
+            $decoratedDataPersister: '@api_platform.doctrine.orm.data_persister'
+
     App\DataProvider\DependenciesDataProvider:
         arguments: ['%kernel.project_dir%']
 

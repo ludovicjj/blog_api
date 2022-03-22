@@ -3,6 +3,7 @@
 namespace App\Tests\functional;
 
 use App\Entity\CheeseListing;
+use App\Entity\CheeseNotification;
 use App\Entity\User;
 use App\Test\CustomApiTestCase;
 use Hautelook\AliceBundle\PhpUnit\RecreateDatabaseTrait;
@@ -116,9 +117,18 @@ class CheeseListingResourceTest extends CustomApiTestCase
         ]);
         $this->assertResponseStatusCodeSame(200);
         $em = $this->getEntityManager();
-        /** @var CheeseListing $cheese */
-        $cheese = $em->getRepository(CheeseListing::class)->findOneBy(['id' => $cheese->getId()]);
-        $this->assertTrue($cheese->getIsPublished());
+        /** @var CheeseListing $cheeseListing */
+        $cheeseListing = $em->getRepository(CheeseListing::class)->findOneBy(['id' => $cheese->getId()]);
+        $this->assertTrue($cheeseListing->getIsPublished());
+
+        $cheeseNotificationCount = $em->getRepository(CheeseNotification::class)->count([]);
+        $this->assertEquals(1, $cheeseNotificationCount);
+
+        $client->request('PUT', '/api/cheeses/'.$cheese->getId(), [
+            'json' => ['isPublished' => true]
+        ]);
+        $cheeseNotificationCount = $em->getRepository(CheeseNotification::class)->count([]);
+        $this->assertEquals(1, $cheeseNotificationCount);
     }
 
     private function createCheeseListing(
