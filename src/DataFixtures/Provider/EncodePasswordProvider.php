@@ -2,7 +2,7 @@
 
 namespace App\DataFixtures\Provider;
 
-class PasswordProvider
+class EncoderPasswordProvider
 {
     public static function hashPassword($password): string
     {
