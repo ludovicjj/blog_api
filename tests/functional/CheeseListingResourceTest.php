@@ -6,6 +6,7 @@ use App\Entity\CheeseListing;
 use App\Entity\CheeseNotification;
 use App\Entity\User;
 use App\Test\CustomApiTestCase;
+use Fidry\AliceDataFixtures\Loader\PurgerLoader;
 use Hautelook\AliceBundle\PhpUnit\RecreateDatabaseTrait;
 
 class CheeseListingResourceTest extends CustomApiTestCase
@@ -108,23 +109,26 @@ class CheeseListingResourceTest extends CustomApiTestCase
     public function testPublishCheeseListing()
     {
         $client = self::createClient();
-        $user = $this->createUser('user@example.com', 'foo');
-        $cheese = $this->createCheeseListing('cheese1', 'cheese', 1000, $user);
+        $loadedObject = $this->loadFixtures(['tests/fixtures/publish_cheese_listing.yaml']);
+        $cheeseId = $loadedObject['cheese_1']->getId();
+        $em = $this->getEntityManager();
+
         $this->login($client, 'user@example.com', 'foo');
 
-        $client->request('PUT', '/api/cheeses/'.$cheese->getId(), [
+        $client->request('PUT', '/api/cheeses/'.$cheeseId, [
             'json' => ['isPublished' => true]
         ]);
         $this->assertResponseStatusCodeSame(200);
-        $em = $this->getEntityManager();
+
         /** @var CheeseListing $cheeseListing */
-        $cheeseListing = $em->getRepository(CheeseListing::class)->findOneBy(['id' => $cheese->getId()]);
+        $cheeseListing = $em->getRepository(CheeseListing::class)->findOneBy(['id' => $cheeseId]);
         $this->assertTrue($cheeseListing->getIsPublished());
 
         $cheeseNotificationCount = $em->getRepository(CheeseNotification::class)->count([]);
         $this->assertEquals(1, $cheeseNotificationCount);
 
-        $client->request('PUT', '/api/cheeses/'.$cheese->getId(), [
+        // Update again the same cheese and get only one notification
+        $client->request('PUT', '/api/cheeses/'.$cheeseId, [
             'json' => ['isPublished' => true]
         ]);
         $cheeseNotificationCount = $em->getRepository(CheeseNotification::class)->count([]);

@@ -1,0 +1,11 @@
+App\Entity\User:
+    user_1:
+        email: 'user\@example.com'
+        password: <hashPassword('foo')>
+        username: "user"
+App\Entity\CheeseListing:
+    cheese_1:
+        title: "Angors"
+        description: "L’Angors est un fromage fabriqué de manière artisanale, au lait cru de chèvre. Il est produit dans les Deux-Sèvres par la Fromagerie des Gors."
+        price: 750
+        owner: '@user_1'
