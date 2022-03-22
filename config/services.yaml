@@ -51,7 +51,7 @@ services:
     App\DataProvider\DependenciesDataProvider:
         arguments: ['%kernel.project_dir%']
 
-    App\DataFixtures\Provider\PasswordProvider:
+    App\DataFixtures\Provider\EncodePasswordProvider:
         tags: [{ name: nelmio_alice.faker.provider }]
 
     App\Doctrine\CheeseListingSetOwnerListener:
