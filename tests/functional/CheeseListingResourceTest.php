@@ -124,4 +124,53 @@ class CheeseListingResourceTest extends CustomApiTestCase
         $cheeseNotificationCount = $em->getRepository(CheeseNotification::class)->count([]);
         $this->assertEquals(1, $cheeseNotificationCount);
     }
+
+    public function testPublishValidationCheeseListing()
+    {
+        $client = self::createClient();
+        $loadedObject = $this->loadFixtures(['tests/fixtures/publish_validation_cheese_listing.yaml']);
+
+        // 1) the owner CANNOT publish with a short description
+        // Custom constraint IsValidPublish check description length
+        $this->login($client, 'user1@example.com', 'foo');
+        $client->request('PUT', '/api/cheeses/'.$loadedObject['cheese_1']->getId(), [
+            'json' => ['isPublished' => true]
+        ]);
+        $this->assertResponseStatusCodeSame(422, 'Cannot publish : description is too short');
+
+        // 2) a user CAN still make any changes as long as the cheese is unpublished
+        $this->login($client, 'user1@example.com', 'foo');
+        $client->request('PUT', '/api/cheeses/'.$loadedObject['cheese_1']->getId(), [
+            'json' => ['description' => 'short']
+        ]);
+        $cheese = $this->refreshEntity(CheeseListing::class, ['id' => $loadedObject['cheese_1']->getId()]);
+        $this->assertResponseStatusCodeSame(200, 'Description is too short BUT this cheese is unpublished');
+        $this->assertEquals('short', $cheese->getDescription());
+
+        // 3) an admin user CAN publish with a short description
+        // Custom constraint IsValidPublish let admin do even if description is too short
+        $this->login($client, 'admin@example.com', 'foo');
+        $client->request('PUT', '/api/cheeses/'.$loadedObject['cheese_1']->getId(), [
+            'json' => ['isPublished' => true]
+        ]);
+        $this->assertResponseStatusCodeSame(200, 'Admin user can publish with short description');
+        $cheese = $this->refreshEntity(CheeseListing::class, ['id' => $loadedObject['cheese_1']->getId()]);
+        $this->assertTrue($cheese->getIsPublished());
+
+        // 4) a user CANNOT unpublish cheese
+        $this->login($client, 'user1@example.com', 'foo');
+        $client->request('PUT', '/api/cheeses/'.$loadedObject['cheese_1']->getId(), [
+            'json' => ['isPublished' => false]
+        ]);
+        $this->assertResponseStatusCodeSame(422, 'Only admin can unpublish');
+
+        // 5) a user CAN unpublish cheese
+        $this->login($client, 'admin@example.com', 'foo');
+        $client->request('PUT', '/api/cheeses/'.$loadedObject['cheese_1']->getId(), [
+            'json' => ['isPublished' => false]
+        ]);
+        $this->assertResponseStatusCodeSame(200, 'Admin user can unpublish');
+        $cheese = $this->refreshEntity(CheeseListing::class, ['id' => $loadedObject['cheese_1']->getId()]);
+        $this->assertFalse($cheese->getIsPublished());
+    }
 }
