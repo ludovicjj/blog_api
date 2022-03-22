@@ -3,6 +3,7 @@ App\Entity\User:
         email: 'user\@example.com'
         password: <hashPassword('foo')>
         username: "user"
+
 App\Entity\CheeseListing:
     cheese_1:
         title: "Angors"
