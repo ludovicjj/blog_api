@@ -2,10 +2,17 @@
 
 namespace App\DataFixtures\Provider;
 
-class EncoderPasswordProvider
+use App\Entity\User;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+
+class EncodePasswordProvider
 {
-    public static function hashPassword($password): string
+    public function __construct(private UserPasswordHasherInterface $hasher)
     {
-        return $password;
+    }
+
+    public function hashPassword($plainPassword): string
+    {
+        return $this->hasher->hashPassword(new User(), $plainPassword);
     }
 }
