@@ -1,5 +1,0 @@
-App\Entity\User:
-    user_1:
-        email: 'jane\@example.com'
-        password: <hashPassword('foo')>
-        username: "jane"
