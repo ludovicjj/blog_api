@@ -64,4 +64,11 @@ class CustomApiTestCase extends ApiTestCase
         $loader = $container->get('fidry_alice_data_fixtures.loader.doctrine');
         return $loader->load($fixturesFiles);
     }
+
+    protected function refreshEntity(string $entityClass, array $criteria = []): ?object
+    {
+        $em = $this->getEntityManager();
+        $repository = $em->getRepository($entityClass);
+        return $repository->findOneBy($criteria);
+    }
 }
