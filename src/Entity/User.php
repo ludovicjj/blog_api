@@ -50,8 +50,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted("ROLE_USER")'
         ],
         'put' => [
-            'security' => 'is_granted("ROLE_USER") and object == user',
-            'validation_groups' => ['Default', 'create']
+            'security' => 'is_granted("ROLE_USER") and object == user'
         ],
         'delete' => [
             'security' => 'is_granted("ROLE_ADMIN")'
