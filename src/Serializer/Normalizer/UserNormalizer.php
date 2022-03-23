@@ -29,10 +29,7 @@ class UserNormalizer implements ContextAwareNormalizerInterface, NormalizerAware
         }
         $context[self::ALREADY_CALLED] = true;
 
-        $data = $this->normalizer->normalize($object, $format, $context);
-        $data['isMe'] = $owner;
-
-        return $data;
+        return $this->normalizer->normalize($object, $format, $context);
     }
 
     public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
