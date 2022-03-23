@@ -40,6 +40,7 @@ services:
         # our service is never cached (which, of course, can have performance implications!)
         decoration_priority: -20
 
+    # Persister
     App\DataPersister\UserPersister:
         bind:
             $decoratedDataPersister: '@api_platform.doctrine.orm.data_persister'
@@ -47,6 +48,11 @@ services:
     App\DataPersister\CheeseListingPersister:
         bind:
             $decoratedDataPersister: '@api_platform.doctrine.orm.data_persister'
+
+    # Provider
+    App\DataProvider\UserProvider:
+        bind:
+            $collectionDataProvider: '@api_platform.doctrine.orm.default.collection_data_provider'
 
     App\DataProvider\DependenciesDataProvider:
         arguments: ['%kernel.project_dir%']
