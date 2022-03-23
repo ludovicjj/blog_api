@@ -50,11 +50,15 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted("ROLE_USER")'
         ],
         'put' => [
-            'security' => 'is_granted("ROLE_USER") and object == user'
+            'security' => 'is_granted("ROLE_USER") and object == user',
+            'validation_groups' => ['Default', 'create']
         ],
         'delete' => [
             'security' => 'is_granted("ROLE_ADMIN")'
         ]
+    ],
+    attributes: [
+        'pagination_items_per_page' => 2
     ]
 )]
 #[ApiFilter(PropertyFilter::class)]
