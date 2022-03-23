@@ -110,6 +110,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $phoneNumber;
 
     /**
+     * Returns true if this is the currently-authenticated user
+     */
+    #[Groups(['user:read'])]
+    private $isMe;
+
+    /**
      * @ORM\OneToMany(targetEntity=CheeseListing::class, mappedBy="owner", cascade={"persist"}, orphanRemoval=true)
      * @Assert\Valid()
      */
@@ -259,5 +265,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getPhoneNumber(): ?string
     {
         return $this->phoneNumber;
+    }
+
+    public function getIsMe(): bool
+    {
+        if ($this->isMe === null) {
+            throw new \LogicException("The isMe field has not been initialized");
+        }
+        return $this->isMe;
+    }
+
+
+    public function setIsMe(bool $isMe): self
+    {
+        $this->isMe = $isMe;
+        return $this;
     }
 }
