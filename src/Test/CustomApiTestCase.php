@@ -71,4 +71,13 @@ class CustomApiTestCase extends ApiTestCase
         $repository = $em->getRepository($entityClass);
         return $repository->findOneBy($criteria);
     }
+
+    protected function persist(?Object $entity = null)
+    {
+        $em = $this->getEntityManager();
+        if ($entity) {
+            $em->persist($entity);
+        }
+        $em->flush();
+    }
 }
