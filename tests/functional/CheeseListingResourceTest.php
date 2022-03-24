@@ -14,7 +14,7 @@ class CheeseListingResourceTest extends CustomApiTestCase
     public function testCreateCheeseListing()
     {
         $client = self::createClient();
-        $loadedObject = $this->loadFixtures(['tests/fixtures/create_cheese_listing.yaml']);
+        $loadedObject = $this->loadFixtures(['tests/fixtures/cheese_listing/create_cheese_listing.yaml']);
         $client->request("POST", "/api/cheeses", [
             'json' => []
         ]);
@@ -50,7 +50,7 @@ class CheeseListingResourceTest extends CustomApiTestCase
     public function testGetCheeseListingCollection()
     {
         $client = self::createClient();
-        $this->loadFixtures(['tests/fixtures/get_collection_cheese_listing.yaml']);
+        $this->loadFixtures(['tests/fixtures/cheese_listing/get_collection_cheese_listing.yaml']);
 
         $client->request('GET', '/api/cheeses');
         $this->assertJsonContains(['hydra:totalItems' => 2]);
@@ -59,7 +59,7 @@ class CheeseListingResourceTest extends CustomApiTestCase
     public function testGetCheeseListingItem()
     {
         $client = self::createClient();
-        $loadedObject = $this->loadFixtures(['tests/fixtures/get_item_cheese_listing.yaml']);
+        $loadedObject = $this->loadFixtures(['tests/fixtures/cheese_listing/get_item_cheese_listing.yaml']);
         $cheeseId = $loadedObject['cheese_1']->getId();
 
         $client->request('GET', '/api/cheeses/'.$cheeseId);
@@ -79,7 +79,7 @@ class CheeseListingResourceTest extends CustomApiTestCase
     public function testUpdateCheeseListing()
     {
         $client = self::createClient();
-        $loadedObject = $this->loadFixtures(['tests/fixtures/update_cheese_listing.yaml']);
+        $loadedObject = $this->loadFixtures(['tests/fixtures/cheese_listing/update_cheese_listing.yaml']);
         $cheeseId = $loadedObject['cheese_1']->getId();
 
         $this->login($client, 'user2@example.com', 'foo');
@@ -99,7 +99,7 @@ class CheeseListingResourceTest extends CustomApiTestCase
     public function testPublishCheeseListing()
     {
         $client = self::createClient();
-        $loadedObject = $this->loadFixtures(['tests/fixtures/publish_cheese_listing.yaml']);
+        $loadedObject = $this->loadFixtures(['tests/fixtures/cheese_listing/publish_cheese_listing.yaml']);
         $cheeseId = $loadedObject['cheese_1']->getId();
         $em = $this->getEntityManager();
 
@@ -128,7 +128,7 @@ class CheeseListingResourceTest extends CustomApiTestCase
     public function testPublishValidationCheeseListing()
     {
         $client = self::createClient();
-        $loadedObject = $this->loadFixtures(['tests/fixtures/publish_validation_cheese_listing.yaml']);
+        $loadedObject = $this->loadFixtures(['tests/fixtures/cheese_listing/publish_validation_cheese_listing.yaml']);
 
         // 1) the owner CANNOT publish with a short description
         // Custom constraint IsValidPublish check description length
