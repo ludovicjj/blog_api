@@ -25,6 +25,9 @@ class SetIsMeOnCurrentUserSubscriber implements EventSubscriberInterface
         if (!$user) {
             return;
         }
+        // Get access to item or items for current API request
+        // https://symfonycasts.com/screencast/api-platform-extending/listeners-data
+        // $data = $event->getRequest()->attributes->get('data');
 
         $user->setIsMe(true);
     }
