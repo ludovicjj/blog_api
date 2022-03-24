@@ -115,6 +115,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private bool $isMe = false;
 
     /**
+     * Returns true if this user is an MVP
+     */
+    #[Groups(['user:read'])]
+    private bool $isMvp = false;
+
+    /**
      * @ORM\OneToMany(targetEntity=CheeseListing::class, mappedBy="owner", cascade={"persist"}, orphanRemoval=true)
      * @Assert\Valid()
      */
@@ -276,5 +282,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->isMe = $isMe;
         return $this;
+    }
+
+    public function getIsMvp(): bool
+    {
+        return $this->isMvp;
+    }
+    public function setIsMvp(bool $isMvp)
+    {
+        $this->isMvp = $isMvp;
     }
 }
