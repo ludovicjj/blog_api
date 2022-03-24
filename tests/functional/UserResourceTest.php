@@ -56,7 +56,8 @@ class UserResourceTest extends CustomApiTestCase
         $response = $client->request('GET', '/api/users/'.$objectSet['user_1']->getId());
         $this->assertJsonContains([
             'username' => 'user1',
-            'isMe' => false
+            'isMe' => false,
+            'isMvp' => false
         ]);
         $data = $response->toArray();
         $this->assertArrayNotHasKey('phoneNumber', $data);
@@ -66,7 +67,8 @@ class UserResourceTest extends CustomApiTestCase
         $this->assertJsonContains([
             'username' => 'user1',
             'phoneNumber' => '0123456789',
-            'isMe' => true
+            'isMe' => true,
+            'isMvp' => false
         ]);
 
         // refresh user because entity manager don't remember it handle him
@@ -82,7 +84,8 @@ class UserResourceTest extends CustomApiTestCase
         $this->assertJsonContains([
             'username' => 'user1',
             'phoneNumber' => '0123456789',
-            'isMe' => false
+            'isMe' => false,
+            'isMvp' => false
         ]);
 
         // user is MVP if their username contains the word "cheese"
