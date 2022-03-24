@@ -112,7 +112,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * Returns true if this is the currently-authenticated user
      */
     #[Groups(['user:read'])]
-    private $isMe;
+    private bool $isMe = false;
 
     /**
      * @ORM\OneToMany(targetEntity=CheeseListing::class, mappedBy="owner", cascade={"persist"}, orphanRemoval=true)
@@ -268,9 +268,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getIsMe(): bool
     {
-        if ($this->isMe === null) {
-            throw new \LogicException("The isMe field has not been initialized");
-        }
         return $this->isMe;
     }
 
