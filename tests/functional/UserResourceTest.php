@@ -21,6 +21,9 @@ class UserResourceTest extends CustomApiTestCase
             ]
         ]);
         $this->assertResponseStatusCodeSame(201);
+        $this->assertJsonContains([
+            'isMe' => false
+        ]);
         $this->login($client, 'john@example.com', 'foo');
     }
 
