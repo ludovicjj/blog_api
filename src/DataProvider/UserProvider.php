@@ -7,15 +7,13 @@ use ApiPlatform\Core\DataProvider\ContextAwareCollectionDataProviderInterface;
 use ApiPlatform\Core\DataProvider\ItemDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
 use App\Entity\User;
-use Symfony\Component\Security\Core\Security;
 use ApiPlatform\Core\DataProvider\DenormalizedIdentifiersAwareItemDataProviderInterface;
 
 class UserProvider implements ContextAwareCollectionDataProviderInterface, DenormalizedIdentifiersAwareItemDataProviderInterface, RestrictedDataProviderInterface
 {
     public function __construct(
         private CollectionDataProviderInterface $collectionDataProvider,
-        private ItemDataProviderInterface $itemDataProvider,
-        private Security $security
+        private ItemDataProviderInterface $itemDataProvider
     )
     {
     }
@@ -26,10 +24,10 @@ class UserProvider implements ContextAwareCollectionDataProviderInterface, Denor
 
         /** @var User[] $users */
         $users = $this->collectionDataProvider->getCollection($resourceClass, $operationName, $context);
-        $currentUser = $this->security->getUser();
-        foreach ($users as $user) {
-            $user->setIsMe($user === $currentUser);
-        }
+        // foreach ($users as $user) {
+            // field isMe is now handle by subscriber
+            // $user->setIsMe($user === $currentUser);
+        // }
 
         return $users;
     }
@@ -46,8 +44,8 @@ class UserProvider implements ContextAwareCollectionDataProviderInterface, Denor
         if ($item === null) {
             return null;
         }
-        $currentUser = $this->security->getUser();
-        $item->setIsMe($item === $currentUser);
+        // field isMe is now handle by subscriber
+        // $item->setIsMe($item === $currentUser);
 
         return $item;
     }
