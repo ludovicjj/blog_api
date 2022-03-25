@@ -3,19 +3,25 @@
 namespace App\DataProvider;
 
 use ApiPlatform\Core\DataProvider\CollectionDataProviderInterface;
+use ApiPlatform\Core\DataProvider\ItemDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
 use App\Entity\DailyStats;
+use App\Service\StatsHelper;
 
-class DailyStatsProvider implements CollectionDataProviderInterface, RestrictedDataProviderInterface
+class DailyStatsProvider implements CollectionDataProviderInterface, ItemDataProviderInterface, RestrictedDataProviderInterface
 {
-    public function getCollection(string $resourceClass, string $operationName = null)
+    public function __construct(private StatsHelper $statsHelper)
     {
-        $dailyStats = (new DailyStats())
-            ->setDate(new \DateTime())
-            ->setTotalVisitors(100)
-            ->setMostPopularListings([]);
+    }
 
-        return [$dailyStats];
+    public function getCollection(string $resourceClass, string $operationName = null): array
+    {
+        return $this->statsHelper->getMany();
+    }
+
+    public function getItem(string $resourceClass, $id, string $operationName = null, array $context = []): ?DailyStats
+    {
+        return $this->statsHelper->getOne($id);
     }
 
     public function supports(string $resourceClass, string $operationName = null, array $context = []): bool
