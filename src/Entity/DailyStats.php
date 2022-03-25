@@ -23,10 +23,13 @@ use DateTimeInterface;
 )]
 class DailyStats
 {
+    #[Groups(['daily-stats:read'])]
     private DateTimeInterface $date;
 
+    #[Groups(['daily-stats:read'])]
     private int $totalVisitors;
 
+    #[Groups(['daily-stats:read'])]
     private array $mostPopularListings;
 
     /**
