@@ -3,135 +3,76 @@
 namespace App\Service;
 
 use App\Entity\DailyStats;
+use App\Repository\CheeseListingRepository;
 use DateTimeImmutable;
-use DateTimeInterface;
 
 class StatsHelper
 {
-    public function __construct(
-        private ?array $criteria = null
-    )
+    public function __construct(private CheeseListingRepository $cheeseListingRepository)
     {
     }
 
-    public function fetchStatsData(): array
+    /**
+     * Load fake data
+     * @return array
+     */
+    private function fetchStatsData(): array
     {
         $statsData = json_decode(file_get_contents(__DIR__ . '/fake_stats.json'), true);
         return $statsData['stats'];
     }
 
+    /**
+     * Count fake data
+     * @return int
+     */
     public function count(): int
     {
-        $countStatsData = [];
-        $fromDate = $this->getCriteria('from');
-
-        if (!$fromDate) {
-            return count($this->fetchStatsData());
-        }
-
-        foreach ($this->fetchStatsData() as $statData) {
-            $dateString = $statData['date'];
-            $date = new DateTimeImmutable($dateString);
-
-            if ($fromDate && $fromDate > $date) {
-                continue;
-            }
-            $countStatsData[] = $statData;
-        }
-
-        return count($countStatsData);
+        return count($this->fetchStatsData());
     }
 
-    private function createDailyStats($statsData): DailyStats
+    /**
+     * Fetch many DailyStats wit criteria (soon)
+     */
+    public function getMany(): array
     {
-        $mostPopularListings = [];
+        $dailyStatsResult = [];
 
-        return new DailyStats(
-            new DateTimeImmutable($statsData['date']),
-            $statsData['visitors'],
-            $mostPopularListings
-        );
+        foreach ($this->fetchStatsData() as $statsData) {
+            $statsData[] = $this->buildDailyStatsObject($statsData);
+        }
+
+        return $dailyStatsResult;
     }
 
-    public function fetchOne(string $date): ?DailyStats
+    /**
+     * Fetch one DailyStats with identifier: date
+     *
+     * @param string $date format : Y-m-d
+     * @return null|DailyStats
+     */
+    public function getOne(string $date): ?DailyStats
     {
-        foreach ($this->fetchStatsData() as $statData) {
-            if ($statData['date'] === $date) {
-                return $this->createDailyStats($statData);
+        foreach ($this->fetchStatsData() as $statsData) {
+            if ($statsData['date'] === $date) {
+                return $this->buildDailyStatsObject($statsData);
             }
         }
+
         return null;
     }
 
     /**
-     * @param int|null $itemsPerPage
-     * @param int|null $offset
-     * @param array{from?: DateTimeInterface, to?: DateTimeInterface} $criteria Supported keys are:
-     *  from DateTimeInterface
-     *  to   DateTimeInterface
-     *
-     * @return array<DailyStats>
-     * @throws \Exception
+     * Build DailyStats object using fake data
      */
-    public function fetchMany(int $itemsPerPage = null, int $offset = null, array $criteria = []): array
+    private function buildDailyStatsObject(array $statsData): DailyStats
     {
-        $this->setCriteria($criteria);
-        $fromDate = $this->getCriteria('from');
-        $stats = [];
-        $i = 0;
-        foreach ($this->fetchStatsData() as $statData) {
-            $i++;
-            // Todo: offset;
-            if ($offset >= $i) {
-                continue;
-            }
+        $cheeseListing = $this->cheeseListingRepository->findBy([], [], 5);
 
-            // Todo filter: from
-            $dateString = $statData['date'];
-            $date = new DateTimeImmutable($dateString);
-            if ($fromDate && $date < $fromDate) {
-                continue;
-            }
-
-            $stats[] = $this->createDailyStats($statData);
-
-            // Todo: items per page;
-            if ($itemsPerPage <= count($stats)) {
-                break;
-            }
-        }
-        return $stats;
-    }
-
-    public function persist(DailyStats $dailyStat): void
-    {
-        $dailyStatsDateInput = $dailyStat->date->format('Y-m-d');
-        $statsDataUpdated = [];
-
-        foreach ($this->fetchStatsData() as $data) {
-            if ($data['date'] === $dailyStatsDateInput) {
-                $data['visitors'] = $dailyStat->totalVisitors;
-            }
-            $statsDataUpdated['stats'][] = $data;
-        }
-
-        file_put_contents(
-            __DIR__ . '/fake_stats.json',
-            json_encode($statsDataUpdated, JSON_PRETTY_PRINT)
+        return new DailyStats(
+            new DateTimeImmutable($statsData['date']),
+            $statsData['visitors'],
+            $cheeseListing
         );
-    }
-
-    private function setCriteria(array $criteria)
-    {
-        $this->criteria = $criteria;
-    }
-
-    private function getCriteria(string $key): ?DateTimeInterface
-    {
-        if (empty($this->criteria)) {
-            return null;
-        }
-
-        return $this->criteria[$key] ?? null;
     }
 }
