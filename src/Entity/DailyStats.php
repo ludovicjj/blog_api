@@ -29,6 +29,10 @@ class DailyStats
     #[Groups(['daily-stats:read'])]
     private int $totalVisitors;
 
+    /**
+     * The 5 most popular cheese listings from this date!
+     * @var array<CheeseListing>
+     */
     #[Groups(['daily-stats:read'])]
     private array $mostPopularListings;
 
