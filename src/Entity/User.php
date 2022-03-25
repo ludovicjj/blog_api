@@ -222,6 +222,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->cheeseListings;
     }
 
+    /**
+     * @return Collection<CheeseListing>
+     */
     #[Groups(['user:read'])]
     #[SerializedName('cheeseListings')]
     public function getPublishedCheeseListings(): Collection
