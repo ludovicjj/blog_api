@@ -34,6 +34,18 @@ class DailyStats
 
     /**
      * @param DateTimeInterface $date
+     * @param int $totalVisitors
+     * @param array|CheeseListing[] $mostPopularListings
+     */
+    public function __construct(\DateTimeInterface $date, int $totalVisitors, array $mostPopularListings)
+    {
+        $this->date = $date;
+        $this->totalVisitors = $totalVisitors;
+        $this->mostPopularListings = $mostPopularListings;
+    }
+
+    /**
+     * @param DateTimeInterface $date
      * @return $this
      */
     public function setDate(DateTimeInterface $date): self
