@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Action\NotFoundAction;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 use DateTimeInterface;
@@ -10,11 +12,18 @@ use DateTimeInterface;
     collectionOperations: [
         'get'
     ],
-    itemOperations: [],
+    itemOperations: [
+        'get' => [
+            'controller' => NotFoundAction::class,
+            'read' => false,
+            'output' => false
+        ]
+    ],
     shortName: "daily-stats",
 )]
 class DailyStats
 {
+    #[ApiProperty(identifier: true)]
     private DateTimeInterface $date;
 
     private int $totalVisitors;
