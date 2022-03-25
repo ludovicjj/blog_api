@@ -1,4 +1,5 @@
 {
+    "_comment": "provider some data to DailyStats custom entity.",
     "stats": [
         {
             "date": "2020-09-03",
