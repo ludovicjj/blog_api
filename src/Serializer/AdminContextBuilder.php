@@ -19,6 +19,18 @@ class AdminContextBuilder implements SerializerContextBuilderInterface
         $this->authorizationChecker = $authorizationChecker;
     }
 
+    /**
+     * At this point context get all automatic contexts groups, and they are handled by documentation
+     * (see: ApiPlatform/AutoGroupResourceMetadataFactory::class)
+     *
+     * Now can add some other custom group, example context group for user with role admin.
+     * But they will not be handled by documentation.
+     *
+     * @param Request $request
+     * @param bool $normalization
+     * @param array|null $extractedAttributes
+     * @return array
+     */
     public function createFromRequest(Request $request, bool $normalization, array $extractedAttributes = null): array
     {
         $context = $this->decorated->createFromRequest($request, $normalization, $extractedAttributes);
