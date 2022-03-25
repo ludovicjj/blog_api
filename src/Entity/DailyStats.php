@@ -23,7 +23,6 @@ use DateTimeInterface;
 )]
 class DailyStats
 {
-    #[ApiProperty(identifier: true)]
     private DateTimeInterface $date;
 
     private int $totalVisitors;
@@ -82,5 +81,11 @@ class DailyStats
     public function getMostPopularListings(): array
     {
         return $this->mostPopularListings;
+    }
+
+    #[ApiProperty(identifier: true)]
+    public function getDateString(): string
+    {
+        return $this->getDate()->format('Y-m-d');
     }
 }
