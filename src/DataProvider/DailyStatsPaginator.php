@@ -13,7 +13,7 @@ class DailyStatsPaginator implements PaginatorInterface, \IteratorAggregate
     public function __construct(
         private StatsHelper $statsHelper,
         private int $currentPage,
-        private int $itemsPerPage
+        private int $itemsPerPage,
     )
     {
     }
