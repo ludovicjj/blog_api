@@ -39,7 +39,7 @@ class StatsHelper
         $dailyStatsResult = [];
 
         foreach ($this->fetchStatsData() as $statsData) {
-            $statsData[] = $this->buildDailyStatsObject($statsData);
+            $dailyStatsResult[] = $this->buildDailyStatsObject($statsData);
         }
 
         return $dailyStatsResult;
