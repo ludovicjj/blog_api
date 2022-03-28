@@ -56,8 +56,12 @@ class DailyStatsPaginator implements PaginatorInterface, \IteratorAggregate
     public function getIterator(): Traversable
     {
         if ($this->dailyStatsIterator === null) {
+            $offset = ($this->getCurrentPage() - 1) * $this->getItemsPerPage();
             $this->dailyStatsIterator = new \ArrayIterator(
-                $this->statsHelper->getMany()
+                $this->statsHelper->getMany(
+                    $this->getItemsPerPage(),
+                    $offset
+                )
             );
         }
 
