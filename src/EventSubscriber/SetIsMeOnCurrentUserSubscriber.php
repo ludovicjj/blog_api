@@ -32,7 +32,10 @@ class SetIsMeOnCurrentUserSubscriber implements EventSubscriberInterface
         $user->setIsMe(true);
     }
 
-    public static function getSubscribedEvents()
+    /**
+     * @return string[]
+     */
+    public static function getSubscribedEvents(): array
     {
         return [
             'kernel.request' => 'onKernelRequest',

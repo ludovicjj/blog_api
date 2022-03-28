@@ -23,7 +23,7 @@ class UserPersister implements ContextAwareDataPersisterInterface
         return $data instanceof User;
     }
 
-    public function persist($data, array $context = [])
+    public function persist($data, array $context = []): void
     {
         if (($context['item_operation_name'] ?? null) === 'put') {
             $this->appLogger->info(sprintf('User %s is being updated', $data->getEmail()));
@@ -38,8 +38,6 @@ class UserPersister implements ContextAwareDataPersisterInterface
         // it's now handle by subscriber
         //$data->setIsMe($this->security->getUser() === $data);
         $this->decoratedDataPersister->persist($data);
-
-        return $data;
     }
 
     public function remove($data, array $context = [])

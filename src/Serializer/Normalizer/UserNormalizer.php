@@ -4,9 +4,11 @@ namespace App\Serializer\Normalizer;
 
 use App\Entity\User;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\ContextAwareNormalizerInterface;
+use ArrayObject;
 
 class UserNormalizer implements ContextAwareNormalizerInterface, NormalizerAwareInterface
 {
@@ -22,9 +24,13 @@ class UserNormalizer implements ContextAwareNormalizerInterface, NormalizerAware
      * if authenticated user is equal to current user resource
      * Add a context normalization group "owner:read"
      *
-     * @param User $object
+     * @param $object
+     * @param string|null $format
+     * @param array $context
+     * @return array|ArrayObject|bool|float|int|string|null
+     * @throws ExceptionInterface
      */
-    public function normalize($object, string $format = null, array $context = [])
+    public function normalize($object, string $format = null, array $context = []): float|array|bool|ArrayObject|int|string|null
     {
         $owner = $this->isUserOwner($object);
         if ($owner) {

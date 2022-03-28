@@ -18,7 +18,7 @@ class UserProvider implements ContextAwareCollectionDataProviderInterface, Denor
     {
     }
 
-    public function getCollection(string $resourceClass, string $operationName = null, array $context = [])
+    public function getCollection(string $resourceClass, string $operationName = null, array $context = []): iterable
     {
         // use the normal data provider from doctrine to handle pagination and filters
 
@@ -37,7 +37,7 @@ class UserProvider implements ContextAwareCollectionDataProviderInterface, Denor
         return $resourceClass === User::class;
     }
 
-    public function getItem(string $resourceClass, $id, string $operationName = null, array $context = [])
+    public function getItem(string $resourceClass, $id, string $operationName = null, array $context = []): ?User
     {
         /** @var User|null $item */
         $item =  $this->itemDataProvider->getItem($resourceClass, $id, $operationName, $context);

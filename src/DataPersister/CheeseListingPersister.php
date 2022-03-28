@@ -25,7 +25,7 @@ class CheeseListingPersister implements DataPersisterInterface
     /**
      * @param CheeseListing $data
      */
-    public function persist($data)
+    public function persist($data): void
     {
         $originalData = $this->entityManager->getUnitOfWork()->getOriginalEntityData($data);
         $wasPublished = $originalData['isPublished'] ?? false;
