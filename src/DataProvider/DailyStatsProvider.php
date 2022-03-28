@@ -16,7 +16,7 @@ class DailyStatsProvider implements CollectionDataProviderInterface, ItemDataPro
 
     public function getCollection(string $resourceClass, string $operationName = null): iterable
     {
-        return new DailyStatsPaginator();
+        return new DailyStatsPaginator($this->statsHelper, 1, 5);
     }
 
     public function getItem(string $resourceClass, $id, string $operationName = null, array $context = []): ?DailyStats
