@@ -9,8 +9,13 @@ class DailyStatsResourceTest extends CustomApiTestCase
     public function testGetDailyStatsCollection()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/daily-stats');
+        $response = $client->request('GET', '/api/daily-stats');
         $this->assertResponseStatusCodeSame(200);
+        $this->assertJsonContains([
+            'hydra:totalItems' => 30,
+        ]);
+        $data = $response->toArray();
+        $this->assertEquals(7, count($data['hydra:member']));
     }
 
     public function testGetDailyStatsItem()
