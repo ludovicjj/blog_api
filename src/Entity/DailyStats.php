@@ -16,6 +16,7 @@ use DateTimeInterface;
         'get'
     ],
     shortName: "daily-stats",
+    paginationItemsPerPage: 7
 )]
 class DailyStats
 {
