@@ -34,15 +34,28 @@ class StatsHelper
     /**
      * Fetch many DailyStats wit criteria (soon)
      */
-    public function getMany(): array
+    public function getMany(int $itemPerPage = null, int $offset = null): array
     {
-        $dailyStatsResult = [];
+        $dailyStatsOutput = [];
+        $i = 0;
 
         foreach ($this->fetchStatsData() as $statsData) {
-            $dailyStatsResult[] = $this->buildDailyStatsObject($statsData);
+            $i++;
+
+            // offset
+            if ($offset >= $i) {
+                continue;
+            }
+
+            $dailyStatsOutput[] = $this->buildDailyStatsObject($statsData);
+
+            // limit
+            if (count($dailyStatsOutput) >= $itemPerPage) {
+                break;
+            }
         }
 
-        return $dailyStatsResult;
+        return $dailyStatsOutput;
     }
 
     /**
