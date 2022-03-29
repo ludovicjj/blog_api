@@ -17,7 +17,7 @@ class DailyStatsRepository
 
     public function update(DailyStats $dailyStats): void
     {
-        $statsData = $this->findAll();
+        $statsData = $this->getDailyStats();
         $stats = &$statsData['stats'];
 
         foreach ($stats as $key => $stat) {
@@ -34,7 +34,7 @@ class DailyStatsRepository
 
     public function find(string $date): ?DailyStats
     {
-        $statsData = $this->findAll();
+        $statsData = $this->getDailyStats();
         foreach ($statsData['stats'] as $stat) {
             if ($stat['date'] === $date) {
                 return new DailyStats(
@@ -47,7 +47,10 @@ class DailyStatsRepository
         return null;
     }
 
-    public function findAll(): array
+    /**
+     * @return array{_comment: array, stats: array}
+     */
+    private function getDailyStats(): array
     {
         $path = $this->rootDir . '/src/Service/fake_stats.json';
         return json_decode(file_get_contents($path), true);
