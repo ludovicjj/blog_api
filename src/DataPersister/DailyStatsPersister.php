@@ -4,9 +4,14 @@ namespace App\DataPersister;
 
 use ApiPlatform\Core\DataPersister\DataPersisterInterface;
 use App\Entity\DailyStats;
+use App\Repository\DailyStatsRepository;
 
 class DailyStatsPersister implements DataPersisterInterface
 {
+
+    public function __construct(private DailyStatsRepository $dailyStatsRepository)
+    {
+    }
 
     public function supports($data): bool
     {
@@ -19,20 +24,9 @@ class DailyStatsPersister implements DataPersisterInterface
      */
     public function persist($data): void
     {
-        $statsData = json_decode(file_get_contents(__DIR__ . '/../Service/fake_stats.json'), true);
-        $stats = &$statsData['stats'];
-
-        foreach ($stats as $key => $stat) {
-            if ($data->getDateString() === $stat['date']) {
-                $stats[$key]['visitors'] = $data->getTotalVisitors();
-            }
-        }
-
-        file_put_contents(
-            __DIR__ . '/../Service/fake_stats.json',
-            json_encode($statsData, JSON_PRETTY_PRINT)
-        );
-
+        // TODO : refactorings pour la création.
+        // TODO : prend seulement en charge la modification (PUT)
+        $this->dailyStatsRepository->update($data);
     }
 
     public function remove($data)
