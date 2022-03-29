@@ -1,5 +1,3 @@
-parameters:
-    stats.data_path: '%env(resolve:STATS_DATA_PATH)%'
 services:
     test.security.password_hash:
         alias: 'Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface'
