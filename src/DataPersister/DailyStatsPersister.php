@@ -13,13 +13,30 @@ class DailyStatsPersister implements DataPersisterInterface
         return $data instanceof DailyStats;
     }
 
-    public function persist($data)
+    /**
+     * @param DailyStats $data
+     * @return void
+     */
+    public function persist($data): void
     {
-        // TODO: Implement persist() method.
+        $statsData = json_decode(file_get_contents(__DIR__ . '/../Service/fake_stats.json'), true);
+        $stats = &$statsData['stats'];
+
+        foreach ($stats as $key => $stat) {
+            if ($data->getDateString() === $stat['date']) {
+                $stats[$key]['visitors'] = $data->getTotalVisitors();
+            }
+        }
+
+        file_put_contents(
+            __DIR__ . '/../Service/fake_stats.json',
+            json_encode($statsData, JSON_PRETTY_PRINT)
+        );
+
     }
 
     public function remove($data)
     {
-        // TODO: Implement remove() method.
+        throw new \Exception('not implemented yet');
     }
 }

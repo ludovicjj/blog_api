@@ -24,4 +24,20 @@ class DailyStatsResourceTest extends CustomApiTestCase
         $client->request('GET', '/api/daily-stats/2020-09-03');
         $this->assertResponseStatusCodeSame(200);
     }
+
+    public function testUpdateDailyStats()
+    {
+        $client = static::createClient();
+        $container = static::getContainer();
+        $statsPath = $container->getParameter('stats.data_path');
+
+        $client->request('PUT', '/api/daily-stats/2020-09-03', [
+            'json' => [
+                'totalVisitors' => 152
+            ]
+        ]);
+        $this->assertResponseStatusCodeSame(200);
+        $data = json_decode(file_get_contents($statsPath), true);
+        $this->assertEquals(152, $data['stats'][0]['visitors']);
+    }
 }

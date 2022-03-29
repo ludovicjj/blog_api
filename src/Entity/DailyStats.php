@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Action\NotFoundAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -13,7 +12,8 @@ use DateTimeInterface;
         'get'
     ],
     itemOperations: [
-        'get'
+        'get',
+        'put'
     ],
     shortName: "daily-stats",
     paginationItemsPerPage: 7
@@ -23,7 +23,7 @@ class DailyStats
     #[Groups(['daily-stats:read'])]
     private DateTimeInterface $date;
 
-    #[Groups(['daily-stats:read'])]
+    #[Groups(['daily-stats:read', 'daily-stats:write'])]
     private int $totalVisitors;
 
     /**
