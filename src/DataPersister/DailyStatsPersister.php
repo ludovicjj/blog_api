@@ -4,31 +4,22 @@ namespace App\DataPersister;
 
 use ApiPlatform\Core\DataPersister\DataPersisterInterface;
 use App\Entity\DailyStats;
-use App\Service\StatsHelper;
 
 class DailyStatsPersister implements DataPersisterInterface
 {
-    public function __construct(private StatsHelper $statsHelper)
-    {
-    }
 
     public function supports($data): bool
     {
         return $data instanceof DailyStats;
     }
 
-    /**
-     * @param DailyStats $data
-     * @return DailyStats
-     */
-    public function persist($data): DailyStats
+    public function persist($data)
     {
-        $this->statsHelper->persist($data);
-        return $data;
+        // TODO: Implement persist() method.
     }
 
     public function remove($data)
     {
-        throw new \Exception('Not supported yet');
+        // TODO: Implement remove() method.
     }
 }
