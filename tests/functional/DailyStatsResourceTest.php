@@ -2,6 +2,7 @@
 
 namespace App\Tests\functional;
 
+use App\Repository\DailyStatsRepository;
 use App\Test\CustomApiTestCase;
 
 class DailyStatsResourceTest extends CustomApiTestCase
@@ -29,15 +30,16 @@ class DailyStatsResourceTest extends CustomApiTestCase
     {
         $client = static::createClient();
         $container = static::getContainer();
-        $statsPath = $container->getParameter('stats.data_path');
+        /** @var DailyStatsRepository $dailyStatsRepository */
+        $dailyStatsRepository = $container->get('App\Repository\DailyStatsRepository');
 
         $client->request('PUT', '/api/daily-stats/2020-09-03', [
             'json' => [
-                'totalVisitors' => 152
+                'totalVisitors' => 18
             ]
         ]);
         $this->assertResponseStatusCodeSame(200);
-        $data = json_decode(file_get_contents($statsPath), true);
-        $this->assertEquals(152, $data['stats'][0]['visitors']);
+        $dailyStats = $dailyStatsRepository->find('2020-09-03');
+        $this->assertEquals(18, $dailyStats->getTotalVisitors());
     }
 }
