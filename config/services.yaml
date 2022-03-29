@@ -68,3 +68,8 @@ services:
     App\Doctrine\UserSetIsMvpListener:
         tags:
             - { name: 'doctrine.orm.entity_listener', event: 'postLoad', entity: 'App\Entity\User'}
+
+    # repository
+    App\Repository\DailyStatsRepository:
+        arguments:
+            - '%kernel.project_dir%'
