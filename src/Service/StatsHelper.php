@@ -82,10 +82,9 @@ class StatsHelper
     {
         $cheeseListing = $this->cheeseListingRepository->findBy([], [], 5);
 
-        return new DailyStats(
-            new DateTimeImmutable($statsData['date']),
-            $statsData['visitors'],
-            $cheeseListing
-        );
+        return (new DailyStats())
+            ->setDate(new DateTimeImmutable($statsData['date']))
+            ->setTotalVisitors($statsData['visitors'])
+            ->setMostPopularListings($cheeseListing);
     }
 }

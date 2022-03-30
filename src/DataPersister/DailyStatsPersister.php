@@ -24,9 +24,10 @@ class DailyStatsPersister implements DataPersisterInterface
      */
     public function persist($data): void
     {
-        // TODO : refactorings pour la création.
-        // TODO : prend seulement en charge la modification (PUT)
-        $this->dailyStatsRepository->update($data);
+        if (!$data->getDate()) {
+            $data->setDate(new \DateTimeImmutable('now'));
+        }
+        $this->dailyStatsRepository->persist($data);
     }
 
     public function remove($data)

@@ -6,10 +6,12 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 use DateTimeInterface;
+use App\Validator\IsUniqueStats;
 
 #[ApiResource(
     collectionOperations: [
-        'get'
+        'get',
+        'post'
     ],
     itemOperations: [
         'get',
@@ -18,32 +20,24 @@ use DateTimeInterface;
     shortName: "daily-stats",
     paginationItemsPerPage: 7
 )]
+/**
+ * @IsUniqueStats()
+ */
 class DailyStats
 {
     #[Groups(['daily-stats:read'])]
-    private DateTimeInterface $date;
+    private ?DateTimeInterface $date = null;
 
     #[Groups(['daily-stats:read', 'daily-stats:write'])]
-    private int $totalVisitors;
+    private ?int $totalVisitors = null;
 
     /**
      * The 5 most popular cheese listings from this date!
-     * @var array<CheeseListing>
+     * @var array<CheeseListing>|array
      */
     #[Groups(['daily-stats:read'])]
-    private array $mostPopularListings;
+    private array $mostPopularListings = [];
 
-    /**
-     * @param DateTimeInterface $date
-     * @param int $totalVisitors
-     * @param array|CheeseListing[] $mostPopularListings
-     */
-    public function __construct(\DateTimeInterface $date, int $totalVisitors, array $mostPopularListings)
-    {
-        $this->date = $date;
-        $this->totalVisitors = $totalVisitors;
-        $this->mostPopularListings = $mostPopularListings;
-    }
 
     /**
      * @param DateTimeInterface $date
@@ -56,9 +50,9 @@ class DailyStats
     }
 
     /**
-     * @return DateTimeInterface
+     * @return DateTimeInterface|null
      */
-    public function getDate(): DateTimeInterface
+    public function getDate(): ?DateTimeInterface
     {
         return $this->date;
     }
@@ -74,9 +68,9 @@ class DailyStats
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getTotalVisitors(): int
+    public function getTotalVisitors(): ?int
     {
         return $this->totalVisitors;
     }
@@ -102,6 +96,9 @@ class DailyStats
     #[ApiProperty(identifier: true)]
     public function getDateString(): string
     {
+        if (!$this->getDate()) {
+            throw new \LogicException('The date field has not been initialized');
+        }
         return $this->getDate()->format('Y-m-d');
     }
 }
