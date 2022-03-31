@@ -8,6 +8,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
+use App\Filter\CheeseSearchFilter;
 use App\Validator\IsValidPublished;
 use Carbon\Carbon;
 use Doctrine\ORM\Mapping as ORM;
@@ -58,6 +59,7 @@ use App\Validator\IsValidOwner;
 )]
 #[ApiFilter(RangeFilter::class, properties: ['price'])]
 #[ApiFilter(PropertyFilter::class)]
+#[ApiFilter(CheeseSearchFilter::class)]
 class CheeseListing
 {
     /**
