@@ -24,11 +24,32 @@ class StatsHelper
 
     /**
      * Count fake data
+     *
+     * @param array $criteria
+     *      Supported keys are:
+     *          * from DateTimeInterface
+     *
      * @return int
      */
-    public function count(): int
+    public function count(array $criteria = []): int
     {
-        return count($this->fetchStatsData());
+        $fromDate = $criteria['from'] ?? null;
+
+        if (!$fromDate) {
+            return count($this->fetchStatsData());
+        }
+
+        $countData = [];
+        foreach ($this->fetchStatsData() as $statsData) {
+            $dateString = $statsData['date'];
+            $date = new DateTimeImmutable($dateString);
+
+            if ($fromDate && $date < $fromDate) {
+                continue;
+            }
+            $countData[] = $statsData;
+        }
+        return count($countData);
     }
 
     /**
