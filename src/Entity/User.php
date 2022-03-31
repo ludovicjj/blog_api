@@ -55,6 +55,9 @@ use Symfony\Component\Validator\Constraints as Assert;
         'delete' => [
             'security' => 'is_granted("ROLE_ADMIN")'
         ]
+    ],
+    attributes: [
+        'pagination_items_per_page' => 2
     ]
 )]
 #[ApiFilter(PropertyFilter::class)]
@@ -104,6 +107,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[Groups(['admin:read', 'user:write', 'owner:read'])]
     private $phoneNumber;
+
+    /**
+     * Returns true if this is the currently-authenticated user
+     */
+    #[Groups(['user:read'])]
+    private bool $isMe = false;
+
+    /**
+     * Returns true if this user is an MVP
+     */
+    #[Groups(['user:read'])]
+    private $isMvp = false;
 
     /**
      * @ORM\OneToMany(targetEntity=CheeseListing::class, mappedBy="owner", cascade={"persist"}, orphanRemoval=true)
@@ -207,6 +222,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->cheeseListings;
     }
 
+    /**
+     * @return Collection<CheeseListing>
+     */
     #[Groups(['user:read'])]
     #[SerializedName('cheeseListings')]
     public function getPublishedCheeseListings(): Collection
@@ -255,5 +273,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getPhoneNumber(): ?string
     {
         return $this->phoneNumber;
+    }
+
+    public function getIsMe(): bool
+    {
+        return $this->isMe;
+    }
+
+
+    public function setIsMe(bool $isMe): self
+    {
+        $this->isMe = $isMe;
+        return $this;
+    }
+
+    public function getIsMvp(): bool
+    {
+        return $this->isMvp;
+    }
+
+    public function setIsMvp(bool $isMvp)
+    {
+        $this->isMvp = $isMvp;
     }
 }

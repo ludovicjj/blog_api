@@ -1,0 +1,16 @@
+App\Entity\User:
+    user_1:
+        email: 'user1\@example.com'
+        password: <hashPassword('foo')>
+        username: "user1"
+    user_admin:
+        email: 'admin\@example.com'
+        password: <hashPassword('foo')>
+        username: "admin"
+        roles: ['ROLE_ADMIN']
+App\Entity\CheeseListing:
+    cheese_1:
+        title: "Angors"
+        description: "A short description"
+        price: 750
+        owner: '@user_1'

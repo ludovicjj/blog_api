@@ -40,12 +40,36 @@ services:
         # our service is never cached (which, of course, can have performance implications!)
         decoration_priority: -20
 
+    # Persister
+    App\DataPersister\UserPersister:
+        bind:
+            $decoratedDataPersister: '@api_platform.doctrine.orm.data_persister'
+
+    App\DataPersister\CheeseListingPersister:
+        bind:
+            $decoratedDataPersister: '@api_platform.doctrine.orm.data_persister'
+
+    # Provider
+    App\DataProvider\UserProvider:
+        bind:
+            $collectionDataProvider: '@api_platform.doctrine.orm.default.collection_data_provider'
+            $itemDataProvider: '@api_platform.doctrine.orm.default.item_data_provider'
+
     App\DataProvider\DependenciesDataProvider:
         arguments: ['%kernel.project_dir%']
 
-    App\DataFixtures\Provider\PasswordProvider:
+    App\DataFixtures\Provider\EncodePasswordProvider:
         tags: [{ name: nelmio_alice.faker.provider }]
 
+    # Listener
     App\Doctrine\CheeseListingSetOwnerListener:
         tags:
             - { name: 'doctrine.orm.entity_listener', event: 'prePersist', entity: 'App\Entity\CheeseListing'}
+    App\Doctrine\UserSetIsMvpListener:
+        tags:
+            - { name: 'doctrine.orm.entity_listener', event: 'postLoad', entity: 'App\Entity\User'}
+
+    # repository
+    App\Repository\DailyStatsRepository:
+        arguments:
+            - '%kernel.project_dir%'

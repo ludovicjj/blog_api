@@ -3,29 +3,28 @@
 namespace App\Tests\functional;
 
 use App\Entity\CheeseListing;
-use App\Entity\User;
+use App\Entity\CheeseNotification;
 use App\Test\CustomApiTestCase;
-use Hautelook\AliceBundle\PhpUnit\ReloadDatabaseTrait;
+use Hautelook\AliceBundle\PhpUnit\RecreateDatabaseTrait;
 
 class CheeseListingResourceTest extends CustomApiTestCase
 {
-    use ReloadDatabaseTrait;
+    use RecreateDatabaseTrait;
 
     public function testCreateCheeseListing()
     {
         $client = self::createClient();
+        $loadedObject = $this->loadFixtures(['tests/fixtures/cheese_listing/create_cheese_listing.yaml']);
         $client->request("POST", "/api/cheeses", [
             'json' => []
         ]);
-        $this->assertResponseStatusCodeSame(401);
+        $this->assertResponseStatusCodeSame(401, 'You must be authenticated');
 
-        $authenticatedUser = $this->createUserAndLogin($client, 'authenticated@example.com', 'foo');
-        $otherUser = $this->createUser('otheruser@example.com', 'foo');
-
+        $this->login($client, 'user1@example.com', 'foo');
         $client->request('POST', '/api/cheeses', [
             'json' => [],
         ]);
-        $this->assertResponseStatusCodeSame(422);
+        $this->assertResponseStatusCodeSame(422, 'Validation violation');
 
         $cheeseData = [
             'title' => 'Mystery cheese... kinda green',
@@ -33,18 +32,17 @@ class CheeseListingResourceTest extends CustomApiTestCase
             'price' => 5000
         ];
 
-        $client->request('POST', '/api/cheeses', [
-            'json' => $cheeseData,
-        ]);
+        // If any owner is defined into body then cheese owner is authenticated user
+        $client->request('POST', '/api/cheeses', ['json' => $cheeseData]);
         $this->assertResponseStatusCodeSame(201);
 
         $client->request("POST", "/api/cheeses", [
-            'json' => $cheeseData + ['owner' => '/api/users/'. $otherUser->getId()]
+            'json' => $cheeseData + ['owner' => '/api/users/'. $loadedObject['user_2']->getId()]
         ]);
-        $this->assertResponseStatusCodeSame(422, 'not passing the correct owner');
+        $this->assertResponseStatusCodeSame(422, 'Custom constraint IsValidOwner: not passing the correct owner');
 
         $client->request("POST", "/api/cheeses", [
-            'json' => $cheeseData + ['owner' => '/api/users/'. $authenticatedUser->getId()]
+            'json' => $cheeseData + ['owner' => '/api/users/'. $loadedObject['user_1']->getId()]
         ]);
         $this->assertResponseStatusCodeSame(201);
     }
@@ -52,11 +50,7 @@ class CheeseListingResourceTest extends CustomApiTestCase
     public function testGetCheeseListingCollection()
     {
         $client = self::createClient();
-        $user = $this->createUser('test@example.com', 'foo');
-
-        $this->createCheeseListing('cheese1', 'cheese', 100, $user);
-        $this->createCheeseListing('cheese2', 'cheese', 100, $user, true);
-        $this->createCheeseListing('cheese3', 'cheese', 100, $user, true);
+        $this->loadFixtures(['tests/fixtures/cheese_listing/get_collection_cheese_listing.yaml']);
 
         $client->request('GET', '/api/cheeses');
         $this->assertJsonContains(['hydra:totalItems' => 2]);
@@ -65,74 +59,118 @@ class CheeseListingResourceTest extends CustomApiTestCase
     public function testGetCheeseListingItem()
     {
         $client = self::createClient();
-        $user = $this->createUser('user@example.com', 'foo');
-        $cheese = $this->createCheeseListing('cheese1', 'cheese', 100, $user);
-        $client->request('GET', '/api/cheeses/'.$cheese->getId());
-        $this->assertResponseStatusCodeSame(404);
+        $loadedObject = $this->loadFixtures(['tests/fixtures/cheese_listing/get_item_cheese_listing.yaml']);
+        $cheeseId = $loadedObject['cheese_1']->getId();
 
-        $this->login($client,'user@example.com', 'foo');
-        $response = $client->request('GET', '/api/users/'.$user->getId());
+        $client->request('GET', '/api/cheeses/'.$cheeseId);
+        $this->assertResponseStatusCodeSame(404, "Only admin can read not published this cheese listing");
+
+        // Check filter return only published cheese listing
+        $this->login($client,'user1@example.com', 'foo');
+        $response = $client->request('GET', '/api/users/'.$loadedObject['user_1']->getId());
         $data = $response->toArray();
         $this->assertEmpty($data['cheeseListings']);
 
-        $this->createUser('admin@example.com', 'foo', ['ROLE_ADMIN']);
         $this->login($client, 'admin@example.com', 'foo');
-        $client->request('GET', '/api/cheeses/'.$cheese->getId());
+        $client->request('GET', '/api/cheeses/'.$cheeseId);
         $this->assertResponseStatusCodeSame(200);
-
-
-
     }
 
     public function testUpdateCheeseListing()
     {
         $client = self::createClient();
-        $user1 = $this->createUser('user1@example.com', 'foo');
-        $user2 = $this->createUser('user2@example.com', 'foo');
-        $this->createUser('admin@example.com', 'foo', ['ROLE_ADMIN']);
-
-        $cheese1 = $this->createCheeseListing('cheese1', 'cheese', 1000, $user1, true);
-        $cheese2 = $this->createCheeseListing('cheese2', 'cheese', 1000, $user1);
+        $loadedObject = $this->loadFixtures(['tests/fixtures/cheese_listing/update_cheese_listing.yaml']);
+        $cheeseId = $loadedObject['cheese_1']->getId();
 
         $this->login($client, 'user2@example.com', 'foo');
 
-        $client->request('PUT', '/api/cheeses/'.$cheese2->getId(), [
+        $client->request('PUT', '/api/cheeses/'.$cheeseId, [
             'json' => ['title' => 'updated']
         ]);
-        $this->assertResponseStatusCodeSame(404);
+        $this->assertResponseStatusCodeSame(403, 'Voter allow only owner or admin to edit this cheese');
 
-        $client->request('PUT', '/api/cheeses/'.$cheese1->getId(), [
-            'json' => ['title' => 'updated']
-        ]);
-        $this->assertResponseStatusCodeSame(404);
-
-        $this->logIn($client, 'user1@example.com', 'foo');
-        $client->request('PUT', '/api/cheeses/'.$cheese1->getId(), [
+        $this->login($client, 'user1@example.com', 'foo');
+        $client->request('PUT', '/api/cheeses/'.$cheeseId, [
             'json' => ['title' => 'updated']
         ]);
         $this->assertResponseStatusCodeSame(200);
     }
 
-    private function createCheeseListing(
-        string $title,
-        string $description,
-        int $price,
-        User $owner,
-        bool $isPublished = false
-    ): CheeseListing
+    public function testPublishCheeseListing()
     {
-        $cheeseListing = new CheeseListing();
-        $cheeseListing
-            ->setTitle($title)
-            ->setDescription($description)
-            ->setPrice($price)
-            ->setOwner($owner)
-            ->setIsPublished($isPublished);
-
+        $client = self::createClient();
+        $loadedObject = $this->loadFixtures(['tests/fixtures/cheese_listing/publish_cheese_listing.yaml']);
+        $cheeseId = $loadedObject['cheese_1']->getId();
         $em = $this->getEntityManager();
-        $em->persist($cheeseListing);
-        $em->flush();
 
-        return $cheeseListing;
+        $this->login($client, 'user@example.com', 'foo');
+
+        $client->request('PUT', '/api/cheeses/'.$cheeseId, [
+            'json' => ['isPublished' => true]
+        ]);
+        $this->assertResponseStatusCodeSame(200);
+
+        /** @var CheeseListing $cheeseListing */
+        $cheeseListing = $em->getRepository(CheeseListing::class)->findOneBy(['id' => $cheeseId]);
+        $this->assertTrue($cheeseListing->getIsPublished());
+
+        $cheeseNotificationCount = $em->getRepository(CheeseNotification::class)->count([]);
+        $this->assertEquals(1, $cheeseNotificationCount);
+
+        // Update again the same cheese and get only one notification
+        $client->request('PUT', '/api/cheeses/'.$cheeseId, [
+            'json' => ['isPublished' => true]
+        ]);
+        $cheeseNotificationCount = $em->getRepository(CheeseNotification::class)->count([]);
+        $this->assertEquals(1, $cheeseNotificationCount);
+    }
+
+    public function testPublishValidationCheeseListing()
+    {
+        $client = self::createClient();
+        $loadedObject = $this->loadFixtures(['tests/fixtures/cheese_listing/publish_validation_cheese_listing.yaml']);
+
+        // 1) the owner CANNOT publish with a short description
+        // Custom constraint IsValidPublish check description length
+        $this->login($client, 'user1@example.com', 'foo');
+        $client->request('PUT', '/api/cheeses/'.$loadedObject['cheese_1']->getId(), [
+            'json' => ['isPublished' => true]
+        ]);
+        $this->assertResponseStatusCodeSame(422, 'Cannot publish : description is too short');
+
+        // 2) a user CAN still make any changes as long as the cheese is unpublished
+        $this->login($client, 'user1@example.com', 'foo');
+        $client->request('PUT', '/api/cheeses/'.$loadedObject['cheese_1']->getId(), [
+            'json' => ['description' => 'short']
+        ]);
+        $cheese = $this->refreshEntity(CheeseListing::class, ['id' => $loadedObject['cheese_1']->getId()]);
+        $this->assertResponseStatusCodeSame(200, 'Description is too short BUT this cheese is unpublished');
+        $this->assertEquals('short', $cheese->getDescription());
+
+        // 3) an admin user CAN publish with a short description
+        // Custom constraint IsValidPublish let admin do even if description is too short
+        $this->login($client, 'admin@example.com', 'foo');
+        $client->request('PUT', '/api/cheeses/'.$loadedObject['cheese_1']->getId(), [
+            'json' => ['isPublished' => true]
+        ]);
+        $this->assertResponseStatusCodeSame(200, 'Admin user can publish with short description');
+        $cheese = $this->refreshEntity(CheeseListing::class, ['id' => $loadedObject['cheese_1']->getId()]);
+        $this->assertTrue($cheese->getIsPublished());
+
+        // 4) a user CANNOT unpublish cheese
+        $this->login($client, 'user1@example.com', 'foo');
+        $client->request('PUT', '/api/cheeses/'.$loadedObject['cheese_1']->getId(), [
+            'json' => ['isPublished' => false]
+        ]);
+        $this->assertResponseStatusCodeSame(422, 'Only admin can unpublish');
+
+        // 5) a user CAN unpublish cheese
+        $this->login($client, 'admin@example.com', 'foo');
+        $client->request('PUT', '/api/cheeses/'.$loadedObject['cheese_1']->getId(), [
+            'json' => ['isPublished' => false]
+        ]);
+        $this->assertResponseStatusCodeSame(200, 'Admin user can unpublish');
+        $cheese = $this->refreshEntity(CheeseListing::class, ['id' => $loadedObject['cheese_1']->getId()]);
+        $this->assertFalse($cheese->getIsPublished());
     }
 }

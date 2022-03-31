@@ -6,6 +6,7 @@ use ApiPlatform\Core\Bridge\Symfony\Bundle\Test\ApiTestCase;
 use ApiPlatform\Core\Bridge\Symfony\Bundle\Test\Client;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Fidry\AliceDataFixtures\Loader\PurgerLoader;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class CustomApiTestCase extends ApiTestCase
@@ -50,9 +51,33 @@ class CustomApiTestCase extends ApiTestCase
         return $user;
     }
 
-    protected function getEntityManager() : EntityManagerInterface
+    protected function getEntityManager(): EntityManagerInterface
     {
         $container = static::getContainer();
         return $container->get('doctrine')->getManager();
+    }
+
+    protected function loadFixtures(array $fixturesFiles = []): array
+    {
+        $container = static::getContainer();
+        /** @var PurgerLoader $loader */
+        $loader = $container->get('fidry_alice_data_fixtures.loader.doctrine');
+        return $loader->load($fixturesFiles);
+    }
+
+    protected function refreshEntity(string $entityClass, array $criteria = []): ?object
+    {
+        $em = $this->getEntityManager();
+        $repository = $em->getRepository($entityClass);
+        return $repository->findOneBy($criteria);
+    }
+
+    protected function persist(?Object $entity = null)
+    {
+        $em = $this->getEntityManager();
+        if ($entity) {
+            $em->persist($entity);
+        }
+        $em->flush();
     }
 }

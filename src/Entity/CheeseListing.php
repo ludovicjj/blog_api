@@ -8,6 +8,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
+use App\Validator\IsValidPublished;
 use Carbon\Carbon;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CheeseListingRepository;
@@ -21,6 +22,7 @@ use App\Validator\IsValidOwner;
 /**
  * @ORM\Entity(repositoryClass=CheeseListingRepository::class)
  * @ORM\Table(name="cheese_listing")
+ * @IsValidPublished()
  */
 #[ApiResource(
     collectionOperations: [
@@ -99,6 +101,7 @@ class CheeseListing
     /**
      * @ORM\Column(type="boolean")
      */
+    #[Groups(['cheese:item:put'])]
     private bool $isPublished;
 
     /**

@@ -31,12 +31,17 @@ when@dev:
 when@test:
     monolog:
         handlers:
+            app:
+                type: stream
+                path: "%kernel.logs_dir%/app/app.%kernel.environment%.log"
+                level: debug
+                channels: ["app"]
             main:
                 type: fingers_crossed
                 action_level: error
                 handler: nested
                 excluded_http_codes: [404, 405]
-                channels: ["!event"]
+                channels: ["!event", "!app"]
             nested:
                 type: stream
                 path: "%kernel.logs_dir%/%kernel.environment%.log"

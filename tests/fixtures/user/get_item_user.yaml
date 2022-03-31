@@ -1,0 +1,14 @@
+App\Entity\User:
+    user_1:
+        email: 'user1\@example.com'
+        password: <hashPassword('foo')>
+        username: "user1"
+        phoneNumber: 0123456789
+    user_2:
+        email: 'user2\@example.com'
+        password: <hashPassword('foo')>
+        username: "user2"
+    user_3:
+        email: 'cheesehead\@example.com'
+        password: <hashPassword('foo')>
+        username: "cheesehead"

@@ -5,27 +5,34 @@ namespace App\DataProvider;
 use ApiPlatform\Core\DataProvider\PaginatorInterface;
 use App\Service\StatsHelper;
 use Traversable;
-use DateTimeInterface;
 
 class DailyStatsPaginator implements PaginatorInterface, \IteratorAggregate
 {
-    private ?Traversable $dailyStatsIterator = null;
-
-    private ?DateTimeInterface $fromDate = null;
+    private $dailyStatsIterator;
 
     public function __construct(
         private StatsHelper $statsHelper,
         private int $currentPage,
-        private int $itemsPerPage
+        private int $itemsPerPage,
     )
     {
     }
 
-    public function getLastPage(): float
+    /**
+     * the number of items on this page
+     *
+     * @return int
+     * @throws \Exception
+     */
+    public function count(): int
     {
-        return ceil($this->getTotalItems() / $this->getItemsPerPage()) ?: 1.;
+        return iterator_count($this->getIterator());
     }
 
+    /**
+     * the total number of results, not just the results on this page.
+     * @return float
+     */
     public function getTotalItems(): float
     {
         return $this->statsHelper->count();
@@ -36,39 +43,24 @@ class DailyStatsPaginator implements PaginatorInterface, \IteratorAggregate
         return $this->currentPage;
     }
 
+    public function getLastPage(): float
+    {
+        return ceil($this->getTotalItems() / $this->getItemsPerPage()) ?: 1.;
+    }
+
     public function getItemsPerPage(): float
     {
         return $this->itemsPerPage;
     }
 
-    public function count(): int
-    {
-        return iterator_count($this->getIterator());
-    }
-
-    private function getOffset(): int
-    {
-        return (($this->getCurrentPage() - 1) * $this->getItemsPerPage());
-    }
-
-    public function setFromDate(DateTimeInterface $fromDate): void
-    {
-        $this->fromDate = $fromDate;
-    }
-
     public function getIterator(): Traversable
     {
         if ($this->dailyStatsIterator === null) {
-            $criteria = [];
-            if ($this->fromDate) {
-                $criteria['from'] = $this->fromDate;
-            }
-
+            $offset = ($this->getCurrentPage() - 1) * $this->getItemsPerPage();
             $this->dailyStatsIterator = new \ArrayIterator(
-                $this->statsHelper->fetchMany(
+                $this->statsHelper->getMany(
                     $this->getItemsPerPage(),
-                    $this->getOffset(),
-                    $criteria
+                    $offset
                 )
             );
         }

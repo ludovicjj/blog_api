@@ -2,40 +2,46 @@
 
 namespace App\DataPersister;
 
+use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use ApiPlatform\Core\DataPersister\DataPersisterInterface;
 use App\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class UserPersister implements DataPersisterInterface
+class UserPersister implements ContextAwareDataPersisterInterface
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private UserPasswordHasherInterface $hasher
+        private DataPersisterInterface $decoratedDataPersister,
+        private UserPasswordHasherInterface $hasher,
+        private LoggerInterface $appLogger
     )
     {
     }
 
-    public function supports($data): bool
+    public function supports($data, array $context = []): bool
     {
         return $data instanceof User;
     }
 
-    public function persist($data)
+    public function persist($data, array $context = []): void
     {
+        if (($context['item_operation_name'] ?? null) === 'put') {
+            $this->appLogger->info(sprintf('User %s is being updated', $data->getEmail()));
+        }
+        if (!$data->getId()) {
+            $this->appLogger->info(sprintf('User %s just registered! Eureka!', $data->getEmail()));
+        }
         if ($data->getPlainPassword()) {
             $data->setPassword($this->hasher->hashPassword($data, $data->getPlainPassword()));
         }
         $data->eraseCredentials();
-
-        $this->entityManager->persist($data);
-        $this->entityManager->flush();
-
-        return $data;
+        // it's now handle by subscriber
+        //$data->setIsMe($this->security->getUser() === $data);
+        $this->decoratedDataPersister->persist($data);
     }
 
-    public function remove($data)
+    public function remove($data, array $context = [])
     {
-        // TODO: Implement remove() method.
+        $this->decoratedDataPersister->remove($data);
     }
 }

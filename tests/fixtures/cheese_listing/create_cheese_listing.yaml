@@ -1,0 +1,9 @@
+App\Entity\User:
+    user_1:
+        email: 'user1\@example.com'
+        password: <hashPassword('foo')>
+        username: "user1"
+    user_2:
+        email: 'user2\@example.com'
+        password: <hashPassword('foo')>
+        username: "user2"

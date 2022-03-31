@@ -1,0 +1,23 @@
+App\Entity\User:
+    user_1:
+        email: 'user1\@example.com'
+        password: <hashPassword('foo')>
+        username: "user1"
+App\Entity\CheeseListing:
+    cheese_1:
+        title: "Angors"
+        description: "L’Angors est un fromage fabriqué de manière artisanale, au lait cru de chèvre. Il est produit dans les Deux-Sèvres par la Fromagerie des Gors."
+        price: 750
+        owner: '@user_1'
+    cheese_2:
+        title: "Bleu de Gex"
+        description: "Le Bleu de Gex (ou Bleu du Haut-Jura ou Septmoncel) est un fromage au lait cru de vache, à pâte persillée non présurée et non cuit."
+        price: 575
+        owner: '@user_1'
+        isPublished: true
+    cheese_3:
+        title: "Bouquetou du Vernet"
+        description: "Le Bouquetou du Vernet est un fromage au lait de cru de chèvre."
+        price: 590
+        owner: '@user_1'
+        isPublished: true
