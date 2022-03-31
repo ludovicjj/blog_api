@@ -20,22 +20,22 @@ class DailyStatsRepository
     {
         $statsData = $this->getStatsData();
         $isUpdated = false;
-        $stats = &$statsData['stats'];
 
-        foreach ($stats as $key => $stat) {
-            // update existing data
+        foreach ($statsData['stats'] as $key => $stat) {
+            // update an existing stats
             if ($dailyStats->getDateString() === $stat['date']) {
                 $isUpdated = true;
-                $stats[$key]['visitors'] = $dailyStats->getTotalVisitors();
+                $statsData['stats'][$key]['visitors'] = $dailyStats->getTotalVisitors();
             }
         }
 
-        // adding new data
+        // adding new stats
         if (!$isUpdated) {
-            $stats[] = [
+            $newStats = [
                 'date' => $dailyStats->getDateString(),
                 'visitors' => $dailyStats->getTotalVisitors()
             ];
+            array_unshift($statsData['stats'], $newStats);
         }
 
         file_put_contents(
@@ -73,11 +73,10 @@ class DailyStatsRepository
     public function remove(string $date): void
     {
         $statsData = $this->getStatsData();
-        $stats = &$statsData['stats'];
 
-        foreach ($stats as $key => $stat) {
+        foreach ($statsData['stats'] as $key => $stat) {
             if ($stat['date'] === $date) {
-                unset($stats[$key]);
+                unset($statsData['stats'][$key]);
             }
         }
 
