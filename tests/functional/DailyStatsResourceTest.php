@@ -13,14 +13,18 @@ class DailyStatsResourceTest extends CustomApiTestCase
         $response = $client->request('GET', '/api/daily-stats');
         $this->assertResponseStatusCodeSame(200);
         $data = $response->toArray();
-        $this->assertEquals(7, count($data['hydra:member']));
+        // updated this assertion after DailyStatsPaginator use dynamique value
+        $this->assertEquals(3, count($data['hydra:member']));
     }
 
     public function testGetDailyStatsItem()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/daily-stats/2020-09-03');
+        $client->request('GET', '/api/daily-stats/2020-09-02');
         $this->assertResponseStatusCodeSame(200);
+        $this->assertJsonContains([
+            'totalVisitors' => 2435
+        ]);
     }
 
     public function testUpdateDailyStats()
