@@ -23,7 +23,10 @@ class DailyStatsProvider implements ContextAwareCollectionDataProviderInterface,
         // limit is define with annotation into DailyStats entity (option: paginationItemsPerPage)
         list($page,, $limit) = $this->pagination->getPagination($resourceClass, $operationName, $context);
 
-        return new DailyStatsPaginator($this->statsHelper, $page , $limit);
+        $paginator = new DailyStatsPaginator($this->statsHelper, $page , $limit);
+        $paginator->setFromDate(new \DateTime('2020-09-02'));
+
+        return $paginator;
     }
 
     public function getItem(string $resourceClass, $id, string $operationName = null, array $context = []): ?DailyStats

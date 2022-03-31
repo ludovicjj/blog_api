@@ -5,10 +5,20 @@ namespace App\DataProvider;
 use ApiPlatform\Core\DataProvider\PaginatorInterface;
 use App\Service\StatsHelper;
 use Traversable;
+use DateTimeInterface;
+use ArrayIterator;
 
 class DailyStatsPaginator implements PaginatorInterface, \IteratorAggregate
 {
-    private $dailyStatsIterator;
+    /**
+     * @var ArrayIterator|null
+     */
+    private ?ArrayIterator $dailyStatsIterator = null;
+
+    /**
+     * @var DateTimeInterface|null
+     */
+    private ?DateTimeInterface $fromDate = null;
 
     public function __construct(
         private StatsHelper $statsHelper,
@@ -35,7 +45,11 @@ class DailyStatsPaginator implements PaginatorInterface, \IteratorAggregate
      */
     public function getTotalItems(): float
     {
-        return $this->statsHelper->count();
+        $criteria = [];
+        if ($this->fromDate) {
+            $criteria['from'] = $this->fromDate;
+        }
+        return $this->statsHelper->count($criteria);
     }
 
     public function getCurrentPage(): float
@@ -57,14 +71,27 @@ class DailyStatsPaginator implements PaginatorInterface, \IteratorAggregate
     {
         if ($this->dailyStatsIterator === null) {
             $offset = ($this->getCurrentPage() - 1) * $this->getItemsPerPage();
-            $this->dailyStatsIterator = new \ArrayIterator(
+
+            $criteria = [];
+
+            if ($this->fromDate) {
+                $criteria['from'] = $this->fromDate;
+            }
+
+            $this->dailyStatsIterator = new ArrayIterator(
                 $this->statsHelper->getMany(
                     $this->getItemsPerPage(),
-                    $offset
+                    $offset,
+                    $criteria
                 )
             );
         }
 
         return $this->dailyStatsIterator;
+    }
+
+    public function setFromDate(DateTimeInterface $fromDate)
+    {
+        $this->fromDate = $fromDate;
     }
 }
