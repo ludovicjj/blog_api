@@ -15,6 +15,13 @@ class DailyStatsFilter implements FilterInterface
 
     public function getDescription(string $resourceClass): array
     {
-        // TODO: Implement getDescription() method.
+        return [
+            'from' => [
+                'property' => null,
+                'type' => 'string',
+                'required' => false,
+                'description' => 'From date e.g. 2020-09-01',
+            ]
+        ];
     }
 }
