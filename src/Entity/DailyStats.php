@@ -2,8 +2,10 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Filter\DailyStatsFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
 use DateTimeInterface;
 use App\Validator\IsUniqueStats;
@@ -20,6 +22,7 @@ use App\Validator\IsUniqueStats;
     shortName: "daily-stats",
     paginationItemsPerPage: 7
 )]
+#[ApiFilter(DailyStatsFilter::class)]
 /**
  * @IsUniqueStats()
  */
