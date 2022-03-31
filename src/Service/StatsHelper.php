@@ -23,7 +23,7 @@ class StatsHelper
     }
 
     /**
-     * Count fake data
+     * Count stats data into json file using criteria
      *
      * @param array $criteria
      *      Supported keys are:
