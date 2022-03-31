@@ -2,6 +2,10 @@
     "_comment": "provider some data to DailyStats custom entity.",
     "stats": [
         {
+            "date": "2022-03-31",
+            "visitors": 42
+        },
+        {
             "date": "2022-03-30",
             "visitors": 42
         },
