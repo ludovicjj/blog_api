@@ -24,9 +24,6 @@ class DailyStatsPersister implements DataPersisterInterface
      */
     public function persist($data): void
     {
-        if (!$data->getDate()) {
-            $data->setDate(new \DateTimeImmutable('now'));
-        }
         $this->dailyStatsRepository->persist($data);
     }
 
