@@ -23,7 +23,7 @@ class OpenApiFactory implements OpenApiFactoryInterface
         $securitySchemes['cookieAuth'] = new \ArrayObject([
             'type' => 'apiKey',
             'in' => 'cookie',
-            'name' => 'JSESSIONID'
+            'name' => 'PHPSESSID'
         ]);
 
         $loginPath = new PathItem();
