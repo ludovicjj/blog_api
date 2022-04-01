@@ -10,11 +10,17 @@ class DailyStatsResourceTest extends CustomApiTestCase
     public function testGetDailyStatsCollection()
     {
         $client = static::createClient();
-        $response = $client->request('GET', '/api/daily-stats');
+        $client->request('GET', '/api/daily-stats');
         $this->assertResponseStatusCodeSame(200);
-        $data = $response->toArray();
-        // updated this assertion after DailyStatsPaginator use dynamique value
-        $this->assertEquals(3, count($data['hydra:member']));
+        $this->assertJsonContains([
+            'hydra:totalItems' => 30
+        ]);
+
+        $client->request('GET', '/api/daily-stats?from=2020-09-01');
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertJsonContains([
+            'hydra:totalItems' => 3
+        ]);
     }
 
     public function testGetDailyStatsItem()
@@ -51,11 +57,7 @@ class DailyStatsResourceTest extends CustomApiTestCase
 
         /** @var DailyStatsRepository $dailyStatsRepository */
         $dailyStatsRepository = $container->get('App\Repository\DailyStatsRepository');
-
         $dateString = (new \DateTimeImmutable('now'))->format('Y-m-d');
-        // clear daily stats if already exist one for today
-        // see constraint: APP/Validator/IsUniqueStatsValidator
-        $dailyStatsRepository->remove($dateString);
 
         $client->request('POST', '/api/daily-stats', [
             'json' => [
@@ -73,6 +75,13 @@ class DailyStatsResourceTest extends CustomApiTestCase
                 'totalVisitors' => 123
             ]
         ]);
-        $this->assertResponseStatusCodeSame(422, "There are already one daily stats for today, come back tomorrow");
+        $this->assertResponseStatusCodeSame(
+            422,
+            "There are already one daily stats for today, come back tomorrow"
+        );
+
+        // Remove daily stats created by test
+        // see constraint: App/Validator/IsUniqueStatsValidator
+        $dailyStatsRepository->remove($dateString);
     }
 }
