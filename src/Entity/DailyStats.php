@@ -22,7 +22,7 @@ use App\Validator\IsUniqueStats;
     shortName: "daily-stats",
     paginationItemsPerPage: 7
 )]
-#[ApiFilter(DailyStatsFilter::class)]
+#[ApiFilter(DailyStatsFilter::class, arguments: ['throwOnInvalidFormat' => true])]
 /**
  * @IsUniqueStats()
  */
