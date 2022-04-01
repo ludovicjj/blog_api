@@ -80,6 +80,8 @@ class DailyStatsRepository
             }
         }
 
+        $statsData['stats'] = array_values($statsData['stats']);
+
         file_put_contents(
             $this->rootDir . '/src/Service/fake_stats.json',
             json_encode($statsData, JSON_PRETTY_PRINT)
