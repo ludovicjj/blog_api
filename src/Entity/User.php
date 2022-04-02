@@ -31,6 +31,17 @@ use Symfony\Component\Validator\Constraints as Assert;
         'post' => [
             'security' => 'is_granted("PUBLIC_ACCESS")',
             'validation_groups' => ['Default', 'create']
+        ]
+    ],
+    itemOperations: [
+        'get' => [
+            'security' => 'is_granted("ROLE_USER")'
+        ],
+        'put' => [
+            'security' => 'is_granted("ROLE_USER") and object == user'
+        ],
+        'delete' => [
+            'security' => 'is_granted("ROLE_ADMIN")'
         ],
         'me' => [
             'path' => '/me',
@@ -43,17 +54,6 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_context' => [
                 'security' => ['cookieAuth' => ['']]
             ]
-        ]
-    ],
-    itemOperations: [
-        'get' => [
-            'security' => 'is_granted("ROLE_USER")'
-        ],
-        'put' => [
-            'security' => 'is_granted("ROLE_USER") and object == user'
-        ],
-        'delete' => [
-            'security' => 'is_granted("ROLE_ADMIN")'
         ]
     ],
     attributes: [

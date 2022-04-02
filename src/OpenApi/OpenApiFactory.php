@@ -116,6 +116,11 @@ class OpenApiFactory implements OpenApiFactoryInterface
         $openApi->getPaths()->addPath("/login", $loginPath->withPost($loginOperation));
         $openApi->getPaths()->addPath("/logout", $logoutPath->withPost($logoutOperation));
 
+        // Remove required parameter "id"
+        $meOperation = $openApi->getPaths()->getPath('/api/me')->getGet()->withParameters([]);
+        $mePath = $openApi->getPaths()->getPath('/api/me');
+        $openApi->getPaths()->addPath('/api/me', $mePath->withGet($meOperation));
+
         return $openApi;
     }
 }
