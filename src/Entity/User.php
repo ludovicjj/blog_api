@@ -26,22 +26,37 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     collectionOperations: [
         'get'=> [
-            'security' => 'is_granted("ROLE_USER")'
+            'security' => 'is_granted("ROLE_USER")',
+            'openapi_context' => [
+                'security' => ['cookieAuth' => ['']]
+            ]
         ],
         'post' => [
             'security' => 'is_granted("PUBLIC_ACCESS")',
-            'validation_groups' => ['Default', 'create']
+            'validation_groups' => ['Default', 'create'],
+            'openapi_context' => [
+                'security' => ['cookieAuth' => ['']]
+            ]
         ]
     ],
     itemOperations: [
         'get' => [
-            'security' => 'is_granted("ROLE_USER")'
+            'security' => 'is_granted("ROLE_USER")',
+            'openapi_context' => [
+                'security' => ['cookieAuth' => ['']]
+            ]
         ],
         'put' => [
-            'security' => 'is_granted("ROLE_USER") and object == user'
+            'security' => 'is_granted("ROLE_USER") and object == user',
+            'openapi_context' => [
+                'security' => ['cookieAuth' => ['']]
+            ]
         ],
         'delete' => [
-            'security' => 'is_granted("ROLE_ADMIN")'
+            'security' => 'is_granted("ROLE_ADMIN")',
+            'openapi_context' => [
+                'security' => ['cookieAuth' => ['']]
+            ]
         ],
         'me' => [
             'path' => '/me',

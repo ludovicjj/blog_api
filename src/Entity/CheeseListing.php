@@ -29,17 +29,26 @@ use App\Validator\IsValidOwner;
     collectionOperations: [
         'get',
         'post' => [
-            'security' => 'is_granted("ROLE_USER")'
+            'security' => 'is_granted("ROLE_USER")',
+            'openapi_context' => [
+                'security' => ['cookieAuth' => ['']]
+            ]
         ]
     ],
     itemOperations: [
         'get',
         'put' => [
             'security' => 'is_granted("CHEESE_EDIT", object)',
-            'security_message' => 'Only author can edit this cheese listing'
+            'security_message' => 'Only author can edit this cheese listing',
+            'openapi_context' => [
+                'security' => ['cookieAuth' => ['']]
+            ]
         ],
         'delete' => [
-            'security' => 'is_granted("ROLE_ADMIN")'
+            'security' => 'is_granted("ROLE_ADMIN")',
+            'openapi_context' => [
+                'security' => ['cookieAuth' => ['']]
+            ]
         ]
     ],
     shortName: 'cheese',
