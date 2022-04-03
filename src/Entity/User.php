@@ -28,14 +28,18 @@ use Symfony\Component\Validator\Constraints as Assert;
         'get'=> [
             'security' => 'is_granted("ROLE_USER")',
             'openapi_context' => [
-                'security' => ['cookieAuth' => ['']]
+                'security' => [
+                    ['cookieAuth' => []]
+                ]
             ]
         ],
         'post' => [
             'security' => 'is_granted("PUBLIC_ACCESS")',
             'validation_groups' => ['Default', 'create'],
             'openapi_context' => [
-                'security' => ['cookieAuth' => ['']]
+                'security' => [
+                    ['cookieAuth' => []]
+                ]
             ]
         ]
     ],
@@ -43,19 +47,25 @@ use Symfony\Component\Validator\Constraints as Assert;
         'get' => [
             'security' => 'is_granted("ROLE_USER")',
             'openapi_context' => [
-                'security' => ['cookieAuth' => ['']]
+                'security' => [
+                    ['cookieAuth' => []]
+                ]
             ]
         ],
         'put' => [
             'security' => 'is_granted("ROLE_USER") and object == user',
             'openapi_context' => [
-                'security' => ['cookieAuth' => ['']]
+                'security' => [
+                    ['cookieAuth' => []]
+                ]
             ]
         ],
         'delete' => [
             'security' => 'is_granted("ROLE_ADMIN")',
             'openapi_context' => [
-                'security' => ['cookieAuth' => ['']]
+                'security' => [
+                    ['cookieAuth' => []]
+                ]
             ]
         ],
         'me' => [
@@ -67,7 +77,9 @@ use Symfony\Component\Validator\Constraints as Assert;
             'filters' => [],
             'security' => 'is_granted("ROLE_USER")',
             'openapi_context' => [
-                'security' => ['cookieAuth' => ['']]
+                'security' => [
+                    ['cookieAuth' => []]
+                ]
             ]
         ]
     ],

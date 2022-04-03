@@ -31,7 +31,9 @@ use App\Validator\IsValidOwner;
         'post' => [
             'security' => 'is_granted("ROLE_USER")',
             'openapi_context' => [
-                'security' => ['cookieAuth' => ['']]
+                'security' => [
+                    ['cookieAuth' => []]
+                ]
             ]
         ]
     ],
@@ -41,13 +43,17 @@ use App\Validator\IsValidOwner;
             'security' => 'is_granted("CHEESE_EDIT", object)',
             'security_message' => 'Only author can edit this cheese listing',
             'openapi_context' => [
-                'security' => ['cookieAuth' => ['']]
+                'security' => [
+                    ['cookieAuth' => []]
+                ]
             ]
         ],
         'delete' => [
             'security' => 'is_granted("ROLE_ADMIN")',
             'openapi_context' => [
-                'security' => ['cookieAuth' => ['']]
+                'security' => [
+                    ['cookieAuth' => []]
+                ]
             ]
         ]
     ],
