@@ -136,7 +136,7 @@ class CheeseListing
         return $this->id;
     }
 
-    public function setTitle(string $title): self
+    public function setTitle(?string $title): self
     {
         $this->title = $title;
         return $this;
@@ -147,7 +147,7 @@ class CheeseListing
         return $this->title;
     }
 
-    public function setDescription(string $description): self
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
         return $this;
@@ -158,7 +158,7 @@ class CheeseListing
         return $this->description;
     }
 
-    public function setPrice(int $price): self
+    public function setPrice(?int $price): self
     {
         $this->price = $price;
         return $this;
