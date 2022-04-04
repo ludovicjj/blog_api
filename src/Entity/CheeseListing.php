@@ -15,8 +15,6 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CheeseListingRepository;
 use DateTimeInterface;
 use DateTimeImmutable;
-use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\IsValidOwner;
 
@@ -94,7 +92,6 @@ class CheeseListing
      *     maxMessage="Maximum 50 caracteres ou moins."
      * )
      */
-    #[Groups(['cheese:write', 'user:write'])]
     private ?string $title = null;
 
     /**
@@ -107,7 +104,6 @@ class CheeseListing
      * @ORM\Column(type="integer")
      * @Assert\NotBlank()
      */
-    #[Groups(['cheese:write', 'user:write'])]
     private ?int $price = null;
 
     /**
@@ -118,7 +114,6 @@ class CheeseListing
     /**
      * @ORM\Column(type="boolean")
      */
-    #[Groups(['cheese:item:put'])]
     private bool $isPublished;
 
     /**
@@ -126,7 +121,6 @@ class CheeseListing
      * @ORM\JoinColumn(nullable=false)
      * @IsValidOwner()
      */
-    #[Groups(['cheese:collection:post'])]
     private $owner;
 
     public function __construct()
@@ -149,19 +143,6 @@ class CheeseListing
     public function getTitle(): ?string
     {
         return $this->title;
-    }
-
-    /**
-     * The description of the cheese as raw text.
-     * @param string $description
-     * @return $this
-     */
-    #[Groups(['cheese:write', 'user:write'])]
-    #[SerializedName('description')]
-    public function setTextDescription(string $description): self
-    {
-        $this->description = str_replace(["\r\n", "\r", "\n"], "<br />", $description);
-        return $this;
     }
 
     public function setDescription(string $description): self
