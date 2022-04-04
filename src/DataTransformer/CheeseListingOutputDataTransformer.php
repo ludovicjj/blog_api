@@ -18,6 +18,7 @@ class CheeseListingOutputDataTransformer implements DataTransformerInterface
         $output->description = $cheeseListing->getDescription();
         $output->price = $cheeseListing->getPrice();
         $output->createdAtAgo = $cheeseListing->getCreatedAtAgo();
+        $output->owner = $cheeseListing->getOwner();
         return $output;
     }
 
