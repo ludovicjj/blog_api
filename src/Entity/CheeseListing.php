@@ -11,7 +11,6 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
 use App\Dto\CheeseListingOutput;
 use App\Filter\CheeseSearchFilter;
 use App\Validator\IsValidPublished;
-use Carbon\Carbon;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CheeseListingRepository;
 use DateTimeInterface;
@@ -95,21 +94,20 @@ class CheeseListing
      *     maxMessage="Maximum 50 caracteres ou moins."
      * )
      */
-    #[Groups(['cheese:read', 'cheese:write', 'user:read', 'user:write'])]
+    #[Groups(['cheese:write', 'user:write'])]
     private ?string $title = null;
 
     /**
      * @ORM\Column(type="text")
      * @Assert\NotBlank()
      */
-    #[Groups(['cheese:read'])]
     private ?string $description = null;
 
     /**
      * @ORM\Column(type="integer")
      * @Assert\NotBlank()
      */
-    #[Groups(['cheese:read', 'cheese:write', 'user:read', 'user:write'])]
+    #[Groups(['cheese:write', 'user:write'])]
     private ?int $price = null;
 
     /**
@@ -128,7 +126,7 @@ class CheeseListing
      * @ORM\JoinColumn(nullable=false)
      * @IsValidOwner()
      */
-    #[Groups(['cheese:read', 'cheese:collection:post'])]
+    #[Groups(['cheese:collection:post'])]
     private $owner;
 
     public function __construct()
@@ -177,20 +175,6 @@ class CheeseListing
         return $this->description;
     }
 
-    /**
-     * Get a part of description limited to 40 characters
-     * @return string|null
-     */
-    #[Groups(['cheese:read'])]
-    public function getShortDescription(): ?string
-    {
-        if (strlen($this->getDescription()) < 40) {
-            return strip_tags($this->getDescription());
-        }
-
-        return substr(strip_tags($this->getDescription()), 0, 40) . '...';
-    }
-
     public function setPrice(int $price): self
     {
         $this->price = $price;
@@ -205,16 +189,6 @@ class CheeseListing
     public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
-    }
-
-    /**
-     * How long ago this cheese item was added in text format, example "1 day ago".
-     * @return string
-     */
-    #[Groups(['cheese:read'])]
-    public function getCreatedAtAgo(): string
-    {
-        return Carbon::instance($this->getCreatedAt())->diffForHumans();
     }
 
     public function setIsPublished(bool $isPublished): self
