@@ -12,7 +12,7 @@ class CheeseListingOutput
      *
      * @var string $title
      */
-    #[Groups(['cheese:read'])]
+    #[Groups(['cheese:read', 'user:read'])]
     public string $title;
 
     /**
@@ -24,7 +24,7 @@ class CheeseListingOutput
     /**
      * @var integer
      */
-    #[Groups(['cheese:read'])]
+    #[Groups(['cheese:read', 'user:read'])]
     public int $price;
 
     /**
