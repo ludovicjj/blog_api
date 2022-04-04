@@ -28,7 +28,11 @@ class DailyStatsDenormalizer implements ContextAwareDenormalizerInterface, Denor
         $context[self::ALREADY_CALLED] = true;
 
         $dailyStats = $this->denormalizer->denormalize($data, $type, $format, $context);
-        $dailyStats->setDate(new \DateTimeImmutable('now'));
+
+        if (!$dailyStats->getDate()) {
+            $dailyStats->setDate(new \DateTimeImmutable('now'));
+        }
+
         return $dailyStats;
     }
 }

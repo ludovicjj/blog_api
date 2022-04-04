@@ -7,6 +7,7 @@ use ApiPlatform\Core\DataProvider\ItemDataProviderInterface;
 use ApiPlatform\Core\DataProvider\Pagination;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
 use App\Entity\DailyStats;
+use App\Filter\DailyStatsFilter;
 use App\Service\StatsHelper;
 
 class DailyStatsProvider implements ContextAwareCollectionDataProviderInterface, ItemDataProviderInterface, RestrictedDataProviderInterface
@@ -23,7 +24,16 @@ class DailyStatsProvider implements ContextAwareCollectionDataProviderInterface,
         // limit is define with annotation into DailyStats entity (option: paginationItemsPerPage)
         list($page,, $limit) = $this->pagination->getPagination($resourceClass, $operationName, $context);
 
-        return new DailyStatsPaginator($this->statsHelper, $page , $limit);
+        $paginator = new DailyStatsPaginator($this->statsHelper, $page , $limit);
+
+        // Use fromDate passed into context by DailyStatsFilter
+        $fromDate = $context[DailyStatsFilter::FROM_FILTER_CONTEXT] ?? null;
+
+        if ($fromDate) {
+            $paginator->setFromDate($fromDate);
+        }
+
+        return $paginator;
     }
 
     public function getItem(string $resourceClass, $id, string $operationName = null, array $context = []): ?DailyStats

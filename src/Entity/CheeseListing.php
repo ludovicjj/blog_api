@@ -8,6 +8,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
+use App\Filter\CheeseSearchFilter;
 use App\Validator\IsValidPublished;
 use Carbon\Carbon;
 use Doctrine\ORM\Mapping as ORM;
@@ -28,17 +29,32 @@ use App\Validator\IsValidOwner;
     collectionOperations: [
         'get',
         'post' => [
-            'security' => 'is_granted("ROLE_USER")'
+            'security' => 'is_granted("ROLE_USER")',
+            'openapi_context' => [
+                'security' => [
+                    ['cookieAuth' => []]
+                ]
+            ]
         ]
     ],
     itemOperations: [
         'get',
         'put' => [
             'security' => 'is_granted("CHEESE_EDIT", object)',
-            'security_message' => 'Only author can edit this cheese listing'
+            'security_message' => 'Only author can edit this cheese listing',
+            'openapi_context' => [
+                'security' => [
+                    ['cookieAuth' => []]
+                ]
+            ]
         ],
         'delete' => [
-            'security' => 'is_granted("ROLE_ADMIN")'
+            'security' => 'is_granted("ROLE_ADMIN")',
+            'openapi_context' => [
+                'security' => [
+                    ['cookieAuth' => []]
+                ]
+            ]
         ]
     ],
     shortName: 'cheese',
@@ -58,6 +74,7 @@ use App\Validator\IsValidOwner;
 )]
 #[ApiFilter(RangeFilter::class, properties: ['price'])]
 #[ApiFilter(PropertyFilter::class)]
+#[ApiFilter(CheeseSearchFilter::class)]
 class CheeseListing
 {
     /**

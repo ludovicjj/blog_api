@@ -23,19 +23,44 @@ class StatsHelper
     }
 
     /**
-     * Count fake data
+     * Count stats data into json file using criteria
+     *
+     * @param array $criteria
+     *      Supported keys are:
+     *          * from DateTimeInterface
+     *
      * @return int
      */
-    public function count(): int
+    public function count(array $criteria = []): int
     {
-        return count($this->fetchStatsData());
+        $fromDate = $criteria['from'] ?? null;
+
+        if (!$fromDate) {
+            return count($this->fetchStatsData());
+        }
+
+        $countData = [];
+        foreach ($this->fetchStatsData() as $statsData) {
+            $dateString = $statsData['date'];
+            $date = new DateTimeImmutable($dateString);
+
+            if ($fromDate && $date < $fromDate) {
+                continue;
+            }
+            $countData[] = $statsData;
+        }
+        return count($countData);
     }
 
     /**
-     * Fetch many DailyStats wit criteria (soon)
+     * Fetch many DailyStats wit criteria
+     * @param array $criteria An array of criteria to limit the results:
+     *      Supported keys are:
+     *          * from DateTimeInterface
      */
-    public function getMany(int $limit = null, int $offset = null): array
+    public function getMany(int $limit = null, int $offset = null, array $criteria = []): array
     {
+        $fromDate = $criteria['from'] ?? null;
         $dailyStatsOutput = [];
         $i = 0;
 
@@ -44,6 +69,14 @@ class StatsHelper
 
             // offset
             if ($offset >= $i) {
+                continue;
+            }
+
+            // from
+            $dateString = $statsData['date'];
+            $date = new \DateTimeImmutable($dateString);
+
+            if ($fromDate && $date < $fromDate) {
                 continue;
             }
 

@@ -37,6 +37,17 @@ class CheeseListingIsPublishedExtension implements QueryCollectionExtensionInter
         $this->addWhere($queryBuilder, $resourceClass);
     }
 
+    /**
+     * This method is used for to get collection or item when resource is CheeseListing
+     * (see: applyToCollection & applyToItem)
+     *
+     * In this example, query is updated to allowed admin user and authenticated user to consult any CheeseListing.
+     * Anonymous user can only see published CheeseListing.
+     *
+     * @param QueryBuilder $queryBuilder
+     * @param string $resourceClass
+     * @return void
+     */
     private function addWhere(QueryBuilder $queryBuilder, string $resourceClass): void
     {
         if ($resourceClass !== CheeseListing::class) {

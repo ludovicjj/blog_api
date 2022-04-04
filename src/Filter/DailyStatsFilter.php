@@ -10,13 +10,10 @@ class DailyStatsFilter implements FilterInterface
 {
     public const FROM_FILTER_CONTEXT = 'daily_stats_from';
 
-    private bool $throwOnInvalid;
-
     public function __construct(
-        bool $throwOnInvalid = false
+        private bool $throwOnInvalidFormat = false
     )
     {
-        $this->throwOnInvalid = $throwOnInvalid;
     }
 
     public function apply(Request $request, bool $normalization, array $attributes, array &$context)
@@ -26,13 +23,15 @@ class DailyStatsFilter implements FilterInterface
         if (!$from) {
             return;
         }
+
         $fromDate = \DateTimeImmutable::createFromFormat('Y-m-d', $from);
-        if (!$fromDate && $this->throwOnInvalid) {
-            throw new BadRequestHttpException('Invalid "from" date format');
+
+        if (!$fromDate && $this->throwOnInvalidFormat) {
+            throw new BadRequestHttpException("Invalid from date format");
         }
 
         if ($fromDate) {
-            $fromDate = $fromDate->setTime(0,0);
+            $fromDate = $fromDate->setTime(0, 0);
             $context[self::FROM_FILTER_CONTEXT] = $fromDate;
         }
     }
@@ -45,9 +44,6 @@ class DailyStatsFilter implements FilterInterface
                 'type' => 'string',
                 'required' => false,
                 'description' => 'From date e.g. 2020-09-01',
-                'openapi' => [
-                    'description' => 'From date e.g. 2020-09-01',
-                ],
             ]
         ];
     }

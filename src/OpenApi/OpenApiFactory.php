@@ -23,7 +23,7 @@ class OpenApiFactory implements OpenApiFactoryInterface
         $securitySchemes['cookieAuth'] = new \ArrayObject([
             'type' => 'apiKey',
             'in' => 'cookie',
-            'name' => 'JSESSIONID'
+            'name' => 'PHPSESSID'
         ]);
 
         $loginPath = new PathItem();
@@ -88,7 +88,38 @@ class OpenApiFactory implements OpenApiFactoryInterface
             )
         );
 
+        $logoutPath = new PathItem();
+        $logoutOperation = new Operation(
+            operationId: 'apiAuthLogout',
+            tags: ['Security'],
+            responses: [
+                '200' => [
+                    'description' => 'Logout Success',
+                    'content' => [
+                        'application/json' => [
+                            'schema' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'message' => [
+                                        'type' => 'string'
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            summary: 'Logout',
+            description: 'Logout'
+        );
+
         $openApi->getPaths()->addPath("/login", $loginPath->withPost($loginOperation));
+        $openApi->getPaths()->addPath("/logout", $logoutPath->withPost($logoutOperation));
+
+        // Remove required parameter "id"
+        $meOperation = $openApi->getPaths()->getPath('/api/me')->getGet()->withParameters([]);
+        $mePath = $openApi->getPaths()->getPath('/api/me');
+        $openApi->getPaths()->addPath('/api/me', $mePath->withGet($meOperation));
 
         return $openApi;
     }
