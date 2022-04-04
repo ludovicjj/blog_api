@@ -8,10 +8,21 @@ use App\Entity\CheeseListing;
 
 class CheeseListingInputDataTransformer implements DataTransformerInterface
 {
-
-    public function transform($object, string $to, array $context = [])
+    /**
+     * @param CheeseListingInput $object
+     */
+    public function transform($object, string $to, array $context = []): CheeseListing
     {
-        // TODO: Implement transform() method.
+        $cheeseListing = new CheeseListing();
+        $cheeseListing
+            ->setTitle($object->title)
+            ->setPrice($object->price)
+            ->setDescription($object->description)
+            ->setOwner($object->owner)
+            ->setIsPublished($object->isPublished)
+        ;
+
+        return $cheeseListing;
     }
 
     public function supportsTransformation($data, string $to, array $context = []): bool
@@ -20,6 +31,6 @@ class CheeseListingInputDataTransformer implements DataTransformerInterface
             return false;
         }
 
-        return $to === CheeseListingInput::class && ($context['input']['class'] ?? null) === CheeseListingInput::class;
+        return $to === CheeseListing::class && ($context['input']['class'] ?? null) === CheeseListingInput::class;
     }
 }
