@@ -9,18 +9,18 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 class CheeseListingInput
 {
     #[Groups(['cheese:write', 'user:write'])]
-    public string $title;
+    public ?string $title = null;
 
     #[Groups(['cheese:write', 'user:write'])]
-    public int $price;
+    public ?int $price = null;
 
     #[Groups(['cheese:collection:post'])]
-    public User $owner;
+    public ?User $owner = null;
 
     #[Groups(['cheese:write'])]
     public bool $isPublished = false;
 
-    public string $description;
+    public ?string $description = null;
 
     /**
      * The description of the cheese as raw text.
