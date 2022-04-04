@@ -8,6 +8,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
+use App\Dto\CheeseListingOutput;
 use App\Filter\CheeseSearchFilter;
 use App\Validator\IsValidPublished;
 use Carbon\Carbon;
@@ -61,7 +62,8 @@ use App\Validator\IsValidOwner;
     attributes: [
         'pagination_items_per_page' => 10,
         'formats' => ['jsonld', 'json', 'html', 'jsonhal', 'csv' => ['text/csv']]
-    ]
+    ],
+    output: CheeseListingOutput::class
 )]
 #[ApiFilter(BooleanFilter::class, properties: ['isPublished'])]
 #[ApiFilter(
