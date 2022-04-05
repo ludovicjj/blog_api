@@ -2,25 +2,26 @@
 
 namespace App\DataTransformer;
 
-use ApiPlatform\Core\DataTransformer\DataTransformerInitializerInterface;
+use ApiPlatform\Core\DataTransformer\DataTransformerInterface;
 use App\Dto\CheeseListingInput;
 use App\Entity\CheeseListing;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
-class CheeseListingInputDataTransformer implements DataTransformerInitializerInterface
+class CheeseListingInputDataTransformer implements DataTransformerInterface
 {
     /**
      * Hydrate CheeseListing with data from CheeseListingInput (DTO)
-     * If Context have no entity, create new CheeseListing (create)
-     * Else get updated Entity from context (PUT)
-     * Then change CheeseListing's properties value with CheeseListingInput data
+     *
+     * First check if Context have underlying CheeseListing object into "object_to_populate",
+     * If no CheeseListing into context, create a new CheeseListing (example: POST request)
+     * Else get CheeseListing from context (example: PUT request)
+     * Then change CheeseListing's properties value using CheeseListingInput data
      *
      * @param CheeseListingInput $object
      */
     public function transform($object, string $to, array $context = []): CheeseListing
     {
         if (isset($context[AbstractNormalizer::OBJECT_TO_POPULATE])) {
-            /** @var CheeseListing $cheeseListing */
             $cheeseListing = $context[AbstractNormalizer::OBJECT_TO_POPULATE];
         } else {
             $cheeseListing = new CheeseListing();
@@ -47,6 +48,11 @@ class CheeseListingInputDataTransformer implements DataTransformerInitializerInt
     }
 
     /**
+     * To use this method class must implement DataTransformerInitializerInterface
+     * Actually it's not used. I hydrate DTO with denormalizer
+     * (see: Serializer/Denormalizer/CheeseListingInputDenormalizer)
+     *
+     *
      * Fetching the Entity from the Context
      * Hydrate CheeseListingInput with value from CheeseListing.
      * return empty or filled DTO to transform method
