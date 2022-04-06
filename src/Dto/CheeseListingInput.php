@@ -8,7 +8,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\IsValidOwner;
+use App\Validator\IsValidPublished;
 
+/**
+ * @IsValidPublished()
+ */
 class CheeseListingInput
 {
     /**
