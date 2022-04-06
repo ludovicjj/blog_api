@@ -16,8 +16,6 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CheeseListingRepository;
 use DateTimeInterface;
 use DateTimeImmutable;
-use Symfony\Component\Validator\Constraints as Assert;
-use App\Validator\IsValidOwner;
 
 /**
  * @ORM\Entity(repositoryClass=CheeseListingRepository::class)
@@ -87,24 +85,16 @@ class CheeseListing
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank()
-     * @Assert\Length(
-     *     min=2,
-     *     max=50,
-     *     maxMessage="Maximum 50 caracteres ou moins."
-     * )
      */
     private ?string $title = null;
 
     /**
      * @ORM\Column(type="text")
-     * @Assert\NotBlank()
      */
     private ?string $description = null;
 
     /**
      * @ORM\Column(type="integer")
-     * @Assert\NotBlank()
      */
     private ?int $price = null;
 
@@ -121,7 +111,6 @@ class CheeseListing
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="cheeseListings")
      * @ORM\JoinColumn(nullable=false)
-     * @IsValidOwner()
      */
     private $owner;
 

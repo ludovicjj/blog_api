@@ -6,22 +6,41 @@ use App\Entity\CheeseListing;
 use App\Entity\User;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator\IsValidOwner;
 
 class CheeseListingInput
 {
+    /**
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min=2,
+     *     max=50,
+     *     maxMessage="Maximum 50 caracteres ou moins."
+     * )
+     */
     #[Groups(['cheese:write', 'user:write'])]
     public ?string $title = null;
 
+    /**
+     * @Assert\NotBlank()
+     */
     #[Groups(['cheese:write', 'user:write'])]
     public ?int $price = null;
-
-    #[Groups(['cheese:collection:post'])]
-    public ?User $owner = null;
 
     #[Groups(['cheese:write'])]
     public bool $isPublished = false;
 
+    /**
+     * @Assert\NotBlank()
+     */
     public ?string $description = null;
+
+    /**
+     * @IsValidOwner()
+     */
+    #[Groups(['cheese:collection:post'])]
+    public ?User $owner = null;
 
     /**
      * The description of the cheese as raw text.
