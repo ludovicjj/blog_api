@@ -10,32 +10,15 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 class CheeseListingInputDataTransformer implements DataTransformerInterface
 {
     /**
-     * Hydrate CheeseListing with data from CheeseListingInput (DTO)
-     *
-     * First check if Context have underlying CheeseListing object into "object_to_populate",
-     * If no CheeseListing into context, create a new CheeseListing (example: POST request)
-     * Else get CheeseListing from context (example: PUT request)
-     * Then change CheeseListing's properties value using CheeseListingInput data
+     * Transform CheeseListingInput to CheeseListing
      *
      * @param CheeseListingInput $object
      */
     public function transform($object, string $to, array $context = []): CheeseListing
     {
-        if (isset($context[AbstractNormalizer::OBJECT_TO_POPULATE])) {
-            $cheeseListing = $context[AbstractNormalizer::OBJECT_TO_POPULATE];
-        } else {
-            $cheeseListing = new CheeseListing();
-        }
+        $cheeseListing = $context[AbstractNormalizer::OBJECT_TO_POPULATE] ?? null;
 
-        $cheeseListing
-            ->setTitle($object->title)
-            ->setPrice($object->price)
-            ->setDescription($object->description)
-            ->setOwner($object->owner)
-            ->setIsPublished($object->isPublished)
-        ;
-
-        return $cheeseListing;
+        return $object->createOrUpdateEntity($cheeseListing);
     }
 
     public function supportsTransformation($data, string $to, array $context = []): bool
@@ -49,17 +32,14 @@ class CheeseListingInputDataTransformer implements DataTransformerInterface
 
     /**
      * To use this method class must implement DataTransformerInitializerInterface
-     * Actually it's not used. I hydrate DTO with denormalizer
+     * required API_PLATFORM -v 2.6
+     * Not used
      * (see: Serializer/Denormalizer/CheeseListingInputDenormalizer)
      *
      *
      * Fetching the Entity from the Context
      * Hydrate CheeseListingInput with value from CheeseListing.
-     * return empty or filled DTO to transform method
-     *
-     * @param string $inputClass
-     * @param array $context
-     * @return CheeseListingInput
+     * return empty or filled DTO used by transform method
      */
     public function initialize(string $inputClass, array $context = [])
     {

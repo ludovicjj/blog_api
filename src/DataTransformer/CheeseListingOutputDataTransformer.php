@@ -9,17 +9,11 @@ use App\Entity\CheeseListing;
 class CheeseListingOutputDataTransformer implements DataTransformerInterface
 {
     /**
-     * @param $cheeseListing CheeseListing
+     * @param $object CheeseListing
      */
-    public function transform($cheeseListing, string $to, array $context = [])
+    public function transform($object, string $to, array $context = []): CheeseListingOutput
     {
-        $output = new CheeseListingOutput();
-        $output->title = $cheeseListing->getTitle();
-        $output->description = $cheeseListing->getDescription();
-        $output->price = $cheeseListing->getPrice();
-        $output->createdAt = $cheeseListing->getCreatedAt();
-        $output->owner = $cheeseListing->getOwner();
-        return $output;
+        return CheeseListingOutput::createFromEntity($object);
     }
 
     public function supportsTransformation($data, string $to, array $context = []): bool
