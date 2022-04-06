@@ -11,7 +11,6 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
 use App\Dto\CheeseListingInput;
 use App\Dto\CheeseListingOutput;
 use App\Filter\CheeseSearchFilter;
-use App\Validator\IsValidPublished;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CheeseListingRepository;
 use DateTimeInterface;
@@ -20,7 +19,6 @@ use DateTimeImmutable;
 /**
  * @ORM\Entity(repositoryClass=CheeseListingRepository::class)
  * @ORM\Table(name="cheese_listing")
- * @IsValidPublished()
  */
 #[ApiResource(
     collectionOperations: [
@@ -112,7 +110,7 @@ class CheeseListing
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="cheeseListings")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $owner;
+    private ?User $owner;
 
     public function __construct()
     {
@@ -125,7 +123,7 @@ class CheeseListing
         return $this->id;
     }
 
-    public function setTitle(?string $title): self
+    public function setTitle(string $title): self
     {
         $this->title = $title;
         return $this;
@@ -136,7 +134,7 @@ class CheeseListing
         return $this->title;
     }
 
-    public function setDescription(?string $description): self
+    public function setDescription(string $description): self
     {
         $this->description = $description;
         return $this;
@@ -147,7 +145,7 @@ class CheeseListing
         return $this->description;
     }
 
-    public function setPrice(?int $price): self
+    public function setPrice(int $price): self
     {
         $this->price = $price;
         return $this;
