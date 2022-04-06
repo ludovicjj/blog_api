@@ -3,12 +3,17 @@
 namespace App\DataTransformer;
 
 use ApiPlatform\Core\DataTransformer\DataTransformerInterface;
+use ApiPlatform\Core\Validator\ValidatorInterface;
 use App\Dto\CheeseListingInput;
 use App\Entity\CheeseListing;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 class CheeseListingInputDataTransformer implements DataTransformerInterface
 {
+    public function __construct(private ValidatorInterface $validator)
+    {
+    }
+
     /**
      * Transform CheeseListingInput to CheeseListing
      *
@@ -16,6 +21,7 @@ class CheeseListingInputDataTransformer implements DataTransformerInterface
      */
     public function transform($object, string $to, array $context = []): CheeseListing
     {
+        $this->validator->validate($object);
         $cheeseListing = $context[AbstractNormalizer::OBJECT_TO_POPULATE] ?? null;
 
         return $object->createOrUpdateEntity($cheeseListing);
