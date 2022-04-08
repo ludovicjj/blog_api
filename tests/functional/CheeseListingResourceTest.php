@@ -4,6 +4,7 @@ namespace App\Tests\functional;
 
 use App\Entity\CheeseListing;
 use App\Entity\CheeseNotification;
+use App\Entity\User;
 use App\Test\CustomApiTestCase;
 use Hautelook\AliceBundle\PhpUnit\RecreateDatabaseTrait;
 
@@ -14,7 +15,7 @@ class CheeseListingResourceTest extends CustomApiTestCase
     public function testCreateCheeseListing()
     {
         $client = self::createClient();
-        $loadedObject = $this->loadFixtures(['tests/fixtures/cheese_listing/create_cheese_listing.yaml']);
+        $this->loadFixtures(['tests/fixtures/cheese_listing/create_cheese_listing.yaml']);
         $client->request("POST", "/api/cheeses", [
             'json' => []
         ]);
@@ -36,13 +37,15 @@ class CheeseListingResourceTest extends CustomApiTestCase
         $client->request('POST', '/api/cheeses', ['json' => $cheeseData]);
         $this->assertResponseStatusCodeSame(201);
 
+        $user2 = $this->refreshEntity(User::class, ['email' => 'user2@example.com']);
         $client->request("POST", "/api/cheeses", [
-            'json' => $cheeseData + ['owner' => '/api/users/'. $loadedObject['user_2']->getId()]
+            'json' => $cheeseData + ['owner' => '/api/users/'. $user2->getUuid()->toString()]
         ]);
         $this->assertResponseStatusCodeSame(422, 'Custom constraint IsValidOwner: not passing the correct owner');
 
+        $user1 = $this->refreshEntity(User::class, ['email' => 'user1@example.com']);
         $client->request("POST", "/api/cheeses", [
-            'json' => $cheeseData + ['owner' => '/api/users/'. $loadedObject['user_1']->getId()]
+            'json' => $cheeseData + ['owner' => '/api/users/'. $user1->getUuid()->toString()]
         ]);
         $this->assertResponseStatusCodeSame(201);
     }
@@ -69,7 +72,8 @@ class CheeseListingResourceTest extends CustomApiTestCase
 
         // User::getPublishedCheeseListings return only published cheese listings
         $this->login($client,'user1@example.com', 'foo');
-        $response = $client->request('GET', '/api/users/'.$loadedObject['user_1']->getId());
+        $user = $this->refreshEntity(User::class, ['email' => 'user1@example.com']);
+        $response = $client->request('GET', '/api/users/'.$user->getUuid()->toString());
         $data = $response->toArray();
         $this->assertEmpty($data['cheeseListings']);
 
