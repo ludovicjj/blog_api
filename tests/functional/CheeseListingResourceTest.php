@@ -52,6 +52,8 @@ class CheeseListingResourceTest extends CustomApiTestCase
         $client = self::createClient();
         $this->loadFixtures(['tests/fixtures/cheese_listing/get_collection_cheese_listing.yaml']);
 
+        // Check anonymous user have access to published cheese listings
+        // (see: App/Doctrine/CheeseListingIsPublishedExtension)
         $client->request('GET', '/api/cheeses');
         $this->assertJsonContains(['hydra:totalItems' => 2]);
     }
@@ -63,9 +65,9 @@ class CheeseListingResourceTest extends CustomApiTestCase
         $cheeseId = $loadedObject['cheese_1']->getId();
 
         $client->request('GET', '/api/cheeses/'.$cheeseId);
-        $this->assertResponseStatusCodeSame(404, "Only admin can read not published this cheese listing");
+        $this->assertResponseStatusCodeSame(404, "Only admin can read not published cheese listing");
 
-        // Check filter return only published cheese listing
+        // User::getPublishedCheeseListings return only published cheese listings
         $this->login($client,'user1@example.com', 'foo');
         $response = $client->request('GET', '/api/users/'.$loadedObject['user_1']->getId());
         $data = $response->toArray();

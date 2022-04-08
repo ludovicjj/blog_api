@@ -8,22 +8,17 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
+use App\Dto\CheeseListingInput;
+use App\Dto\CheeseListingOutput;
 use App\Filter\CheeseSearchFilter;
-use App\Validator\IsValidPublished;
-use Carbon\Carbon;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CheeseListingRepository;
 use DateTimeInterface;
 use DateTimeImmutable;
-use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Annotation\SerializedName;
-use Symfony\Component\Validator\Constraints as Assert;
-use App\Validator\IsValidOwner;
 
 /**
  * @ORM\Entity(repositoryClass=CheeseListingRepository::class)
  * @ORM\Table(name="cheese_listing")
- * @IsValidPublished()
  */
 #[ApiResource(
     collectionOperations: [
@@ -61,7 +56,9 @@ use App\Validator\IsValidOwner;
     attributes: [
         'pagination_items_per_page' => 10,
         'formats' => ['jsonld', 'json', 'html', 'jsonhal', 'csv' => ['text/csv']]
-    ]
+    ],
+    input: CheeseListingInput::class,
+    output: CheeseListingOutput::class
 )]
 #[ApiFilter(BooleanFilter::class, properties: ['isPublished'])]
 #[ApiFilter(
@@ -86,28 +83,17 @@ class CheeseListing
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank()
-     * @Assert\Length(
-     *     min=2,
-     *     max=50,
-     *     maxMessage="Maximum 50 caracteres ou moins."
-     * )
      */
-    #[Groups(['cheese:read', 'cheese:write', 'user:read', 'user:write'])]
     private ?string $title = null;
 
     /**
      * @ORM\Column(type="text")
-     * @Assert\NotBlank()
      */
-    #[Groups(['cheese:read'])]
     private ?string $description = null;
 
     /**
      * @ORM\Column(type="integer")
-     * @Assert\NotBlank()
      */
-    #[Groups(['cheese:read', 'cheese:write', 'user:read', 'user:write'])]
     private ?int $price = null;
 
     /**
@@ -118,16 +104,13 @@ class CheeseListing
     /**
      * @ORM\Column(type="boolean")
      */
-    #[Groups(['cheese:item:put'])]
     private bool $isPublished;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="cheeseListings")
      * @ORM\JoinColumn(nullable=false)
-     * @IsValidOwner()
      */
-    #[Groups(['cheese:read', 'cheese:collection:post'])]
-    private $owner;
+    private ?User $owner;
 
     public function __construct()
     {
@@ -151,19 +134,6 @@ class CheeseListing
         return $this->title;
     }
 
-    /**
-     * The description of the cheese as raw text.
-     * @param string $description
-     * @return $this
-     */
-    #[Groups(['cheese:write', 'user:write'])]
-    #[SerializedName('description')]
-    public function setTextDescription(string $description): self
-    {
-        $this->description = str_replace(["\r\n", "\r", "\n"], "<br />", $description);
-        return $this;
-    }
-
     public function setDescription(string $description): self
     {
         $this->description = $description;
@@ -173,20 +143,6 @@ class CheeseListing
     public function getDescription(): ?string
     {
         return $this->description;
-    }
-
-    /**
-     * Get a part of description limited to 40 characters
-     * @return string|null
-     */
-    #[Groups(['cheese:read'])]
-    public function getShortDescription(): ?string
-    {
-        if (strlen($this->getDescription()) < 40) {
-            return strip_tags($this->getDescription());
-        }
-
-        return substr(strip_tags($this->getDescription()), 0, 40) . '...';
     }
 
     public function setPrice(int $price): self
@@ -205,23 +161,13 @@ class CheeseListing
         return $this->createdAt;
     }
 
-    /**
-     * How long ago this cheese item was added in text format, example "1 day ago".
-     * @return string
-     */
-    #[Groups(['cheese:read'])]
-    public function getCreatedAtAgo(): string
-    {
-        return Carbon::instance($this->getCreatedAt())->diffForHumans();
-    }
-
     public function setIsPublished(bool $isPublished): self
     {
         $this->isPublished = $isPublished;
         return $this;
     }
 
-    public function getIsPublished(): ?bool
+    public function getIsPublished(): bool
     {
         return $this->isPublished;
     }

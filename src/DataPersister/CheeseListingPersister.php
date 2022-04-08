@@ -29,10 +29,11 @@ class CheeseListingPersister implements DataPersisterInterface
     {
         $originalData = $this->entityManager->getUnitOfWork()->getOriginalEntityData($data);
         $wasPublished = $originalData['isPublished'] ?? false;
+
         if ($data->getIsPublished() && !$wasPublished) {
             $notification = new CheeseNotification($data, 'A new cheese listing is publish');
             $this->entityManager->persist($notification);
-            $this->entityManager->flush();
+            // let DataPersister flush himself
         }
         $this->decoratedDataPersister->persist($data);
     }

@@ -20,11 +20,12 @@ class CheeseNotification
      * @ORM\ManyToOne(targetEntity=CheeseListing::class)
      * @ORM\JoinColumn(nullable=false)
      */
-    private $cheeseListing;
+    private CheeseListing $cheeseListing;
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $notificationText;
+    private string $notificationText;
+
     public function __construct(CheeseListing $cheeseListing, string $notificationText)
     {
         $this->cheeseListing = $cheeseListing;
