@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
 use App\Controller\MeController;
@@ -97,11 +98,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
+    #[ApiProperty(identifier: false)]
     private $id;
 
     /**
      * @ORM\Column(type="uuid", unique=true)
      */
+    #[ApiProperty(identifier: true)]
     private $uuid;
 
     /**
