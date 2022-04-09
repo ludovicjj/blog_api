@@ -23,7 +23,7 @@ class CheeseListingInputDataTransformer implements DataTransformerInterface
     {
         $this->validator->validate($object);
         $cheeseListing = $context[AbstractNormalizer::OBJECT_TO_POPULATE] ?? null;
-
+        // create or update entity using dto
         return $object->createOrUpdateEntity($cheeseListing);
     }
 
