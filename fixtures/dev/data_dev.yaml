@@ -1,12 +1,14 @@
 App\Entity\User:
     user_1:
         email: 'cheeselover1\@example.com'
-        password: "foo"
+        password: <hashPassword('foo')>
         username: "cheeselover1"
+        phoneNumber: '0123456789'
     user_2:
         email: 'cheeselover2\@example.com'
-        password: "foo"
+        password: <hashPassword('foo')>
         username: "cheeselover2"
+        phoneNumber: '0123456789'
 
 App\Entity\CheeseListing:
     cheese_1:
