@@ -105,6 +105,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="uuid", unique=true)
      */
     #[ApiProperty(identifier: true)]
+    #[Groups(['user:collection:post'])]
     private $uuid;
 
     /**
@@ -164,10 +165,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:write'])]
     private $cheeseListings;
 
-    public function __construct()
+    public function __construct(UuidInterface $uuid = null)
     {
         $this->cheeseListings = new ArrayCollection();
-        $this->uuid = Uuid::uuid4();
+        $this->uuid = $uuid ?: Uuid::uuid4();
     }
 
     public function getId(): ?int
