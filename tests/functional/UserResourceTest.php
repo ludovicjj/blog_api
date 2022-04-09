@@ -5,6 +5,7 @@ namespace App\Tests\functional;
 use App\Entity\User;
 use App\Test\CustomApiTestCase;
 use Hautelook\AliceBundle\PhpUnit\RecreateDatabaseTrait;
+use Ramsey\Uuid\Uuid;
 
 class UserResourceTest extends CustomApiTestCase
 {
@@ -30,6 +31,25 @@ class UserResourceTest extends CustomApiTestCase
         ]);
 
         $this->login($client, 'john@example.com', 'foo');
+    }
+
+    public function testCreateUserWithUuid(): void
+    {
+        $client = static::createClient();
+        $uuid = Uuid::uuid4();
+        $client->request('POST', '/api/users', [
+            'json' => [
+                'uuid' => $uuid,
+                'email' => 'john@example.com',
+                'password' => 'foo',
+                'username' => 'john'
+            ]
+        ]);
+
+        $this->assertResponseStatusCodeSame(201);
+        $this->assertJsonContains([
+            '@id' => '/api/users/'. $uuid
+        ]);
     }
 
     public function testUpdateUser()
